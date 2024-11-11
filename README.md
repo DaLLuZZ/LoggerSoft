@@ -6,6 +6,7 @@ GD32E230C8T6 + BME280 + RA-01
 - Скачать и установить [пак](https://keilpack.azureedge.net/pack/ARM.CMSIS.5.7.0.pack)
 ## Пак и конфигуратор
 - С [сайта](https://www.gd32mcu.com/en/download/0?kw=GD32E2) загрузить `GD32E23x AddOn` и `GD32 Embedded Builder`
+- Установить пак из архива `GD32E23x AddOn`
 - Установить `JDK` [этой](https://mirrors.huaweicloud.com/java/jdk/8u152-b16/) версии (`jdk-8u152-windows-x64.exe`)
 - Распаковать архив с `GD32 Embedded Builder`
 
