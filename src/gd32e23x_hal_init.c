@@ -69,30 +69,26 @@ void msd_clock_init(void)
     hal_rcu_struct_init(HAL_RCU_OSCI_STRUCT, &rcu_osci_parameter);
     hal_rcu_struct_init(HAL_RCU_PERIPHCLK_STRUCT, &rcu_periphclk_parameter);
 
-    rcu_osci_parameter.lxtal.need_configure = ENABLE;
-    rcu_osci_parameter.lxtal.state = RCU_OSC_ON;
     rcu_osci_parameter.irc8m.need_configure = ENABLE;
     rcu_osci_parameter.irc8m.state = RCU_OSC_ON;
     rcu_osci_parameter.irc8m.adjust_value = 0;
-    rcu_osci_parameter.pll.need_configure = ENABLE;
-    rcu_osci_parameter.pll.state = RCU_OSC_ON;
-    rcu_osci_parameter.pll.pll_source = RCU_PLL_SRC_IRC8M_DIV2;
-    rcu_osci_parameter.pll.pll_mul = RCU_PLL_MULT4;
+    rcu_osci_parameter.irc40k.need_configure = ENABLE;
+    rcu_osci_parameter.irc40k.state = RCU_OSC_ON;
     if(HAL_ERR_NONE != hal_rcu_osci_config(&rcu_osci_parameter)){
         while(1);
     }
 
     rcu_clk_parameter.clock_type = RCU_CLKTYPE_SYSCLK | RCU_CLKTYPE_AHBCLK | RCU_CLKTYPE_APB1CLK | RCU_CLKTYPE_APB2CLK;
-    rcu_clk_parameter.sysclk_source = RCU_SYSCLK_SRC_PLL;
+    rcu_clk_parameter.sysclk_source = RCU_SYSCLK_SRC_IRC8M;
     rcu_clk_parameter.ahbclk_divider = RCU_SYSCLK_AHBDIV1;
     rcu_clk_parameter.apb1clk_divider = RCU_AHBCLK_APB1DIV1;
     rcu_clk_parameter.apb2clk_divider = RCU_AHBCLK_APB2DIV1;
-    if(HAL_ERR_NONE != hal_rcu_clock_config(&rcu_clk_parameter, 0)){
+    if(HAL_ERR_NONE != hal_rcu_clock_config(&rcu_clk_parameter, WS_WSCNT_2)){
         while(1);
     }
 
     rcu_periphclk_parameter.periph_clock_type = RCU_PERIPH_CLKTYPE_RTC;
-    rcu_periphclk_parameter.rtc_clock_source = RCU_RTC_CLKSRC_LXTAL;
+    rcu_periphclk_parameter.rtc_clock_source = RCU_RTC_CLKSRC_IRC40K;
     if(HAL_ERR_NONE != hal_rcu_periph_clock_config(&rcu_periphclk_parameter)){
         while(1);
     }
@@ -113,7 +109,6 @@ void msd_gpio_init(void)
     /* user code [gpio_init local 0] end */
     hal_gpio_init_struct gpio_init_parameter;
 
-    hal_rcu_periph_clk_enable(RCU_GPIOC);
     hal_rcu_periph_clk_enable(RCU_GPIOB);
     hal_rcu_periph_clk_enable(RCU_GPIOA);
     hal_gpio_struct_init(&gpio_init_parameter);
@@ -137,19 +132,19 @@ void msd_gpio_init(void)
     gpio_init_parameter.af = HAL_GPIO_AF_0;
     hal_gpio_init(GPIOA, GPIO_PIN_10, &gpio_init_parameter);
 
-    hal_gpio_bit_set(GPIOA, GPIO_PIN_8);
-    gpio_init_parameter.mode = HAL_GPIO_MODE_OUTPUT_PP;
-    gpio_init_parameter.pull = HAL_GPIO_PULL_UP;
-    gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_50MHZ;
-    gpio_init_parameter.af = HAL_GPIO_AF_0;
-    hal_gpio_init(GPIOA, GPIO_PIN_8, &gpio_init_parameter);
-
     hal_gpio_bit_set(GPIOB, GPIO_PIN_12);
     gpio_init_parameter.mode = HAL_GPIO_MODE_OUTPUT_PP;
     gpio_init_parameter.pull = HAL_GPIO_PULL_UP;
     gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_50MHZ;
     gpio_init_parameter.af = HAL_GPIO_AF_0;
     hal_gpio_init(GPIOB, GPIO_PIN_12, &gpio_init_parameter);
+
+    hal_gpio_bit_set(GPIOA, GPIO_PIN_8);
+    gpio_init_parameter.mode = HAL_GPIO_MODE_OUTPUT_PP;
+    gpio_init_parameter.pull = HAL_GPIO_PULL_UP;
+    gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_50MHZ;
+    gpio_init_parameter.af = HAL_GPIO_AF_0;
+    hal_gpio_init(GPIOA, GPIO_PIN_8, &gpio_init_parameter);
 
     hal_gpio_bit_set(GPIOA, GPIO_PIN_9);
     gpio_init_parameter.mode = HAL_GPIO_MODE_OUTPUT_PP;
@@ -166,14 +161,13 @@ void msd_gpio_deinit(void)
 {
     /* user code [gpio_deinit local 0] begin */
     /* user code [gpio_deinit local 0] end */
-    hal_rcu_periph_clk_disable(RCU_GPIOC);
     hal_rcu_periph_clk_disable(RCU_GPIOB);
     hal_rcu_periph_clk_disable(RCU_GPIOA);
     hal_gpio_deinit(GPIOA, GPIO_PIN_4);
     hal_gpio_deinit(GPIOA, GPIO_PIN_11);
     hal_gpio_deinit(GPIOA, GPIO_PIN_10);
-    hal_gpio_deinit(GPIOA, GPIO_PIN_8);
     hal_gpio_deinit(GPIOB, GPIO_PIN_12);
+    hal_gpio_deinit(GPIOA, GPIO_PIN_8);
     hal_gpio_deinit(GPIOA, GPIO_PIN_9);
     /* user code [gpio_deinit local 1] begin */
     /* user code [gpio_deinit local 1] end */
@@ -279,7 +273,6 @@ void msd_rtc_init(void)
     rtc_init_parameter.rtc_display_format = HAL_RTC_24HOUR;
     hal_rtc_init(&rtc_init_parameter);
 
-    hal_nvic_periph_irq_enable(RTC_IRQn, 0);
     /* user code [rtc_init local 1] begin */
     /* user code [rtc_init local 1] end */
 }

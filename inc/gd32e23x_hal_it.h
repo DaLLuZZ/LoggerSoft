@@ -46,8 +46,6 @@ void PendSV_Handler(void);
 
 void SysTick_Handler(void);
 
-void RTC_IRQHandler(void);
-
 void TIMER0_BRK_UP_TRG_COM_IRQHandler(void);
 
 void USART1_IRQHandler(void);

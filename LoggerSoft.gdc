@@ -5,20 +5,13 @@ MCUPartNo=GD32E230C8T6
 PINOUT.PERIPHERAL.NODE.ADC.IN9=true
 PINOUT.PERIPHERAL.NODE.USART1.Mode=Asynchronous
 PINOUT.PERIPHERAL.NODE.RTC.Activate Clock Source=true
-PINOUT.PERIPHERAL.NODE.SPI0.Mode=Full-Duplex Master
 PINOUT.PERIPHERAL.NODE.TIMER2.Clock selection=Internal clock
+PINOUT.PERIPHERAL.NODE.SPI0.Mode=Full-Duplex Master
 PINOUT.PERIPHERAL.NODE.SPI1.Mode=Full-Duplex Master
 PINOUT.PERIPHERAL.NODE.TIMER0.Clock selection=Internal clock
-PINOUT.PERIPHERAL.NODE.RCU.Low Speed Crystal Oscillator (LXTAL)=Crystal/Ceramic Resonator
 PINOUT.PERIPHERAL.NODE.CRC.Activated=true
 PINOUT.PERIPHERAL.NODE.DBG.Serial Wire=true
 
-PIN.PC14.Signal=OSC32IN
-PIN.PC14.Type=MANUAL_AUTO
-PIN.PC14.Peri=RCU
-PIN.PC15.Signal=OSC32OUT
-PIN.PC15.Type=MANUAL_AUTO
-PIN.PC15.Peri=RCU
 PIN.PA2.Signal=USART1_TX
 PIN.PA2.Type=MANUAL_AUTO
 PIN.PA2.Peri=USART1
@@ -72,9 +65,7 @@ PIN.PA14.Type=MANUAL_AUTO
 PIN.PA14.Peri=DBG
 
 [<ClockContent>]
-RCU.SCS=SCS_10
-RCU.CK_PLL=* 4
-RCU.RTCSRC=RTCSRC_01
+RCU.CK_PLL=* 2
 
 [<PeriConfigContent>]
 GENERALCONGIG.SPI1.BasicParameters##FrameSize1=8 Bits
@@ -87,12 +78,12 @@ GENERALCONGIG.TIMER0.TIMERBasicSettings##CountAutoReloadValue=199
 GPIOCONFIG.CONFIGINFO.GPIO.PA4.OutputLevel=High
 GPIOCONFIG.CONFIGINFO.GPIO.PA4.PullUpDown=Pull-up
 GPIOCONFIG.CONFIGINFO.GPIO.PA4.ModifyFlag=TRUE
-GPIOCONFIG.CONFIGINFO.GPIO.PA8.OutputLevel=High
-GPIOCONFIG.CONFIGINFO.GPIO.PA8.PullUpDown=Pull-up
-GPIOCONFIG.CONFIGINFO.GPIO.PA8.ModifyFlag=TRUE
 GPIOCONFIG.CONFIGINFO.GPIO.PB12.OutputLevel=High
 GPIOCONFIG.CONFIGINFO.GPIO.PB12.PullUpDown=Pull-up
 GPIOCONFIG.CONFIGINFO.GPIO.PB12.ModifyFlag=TRUE
+GPIOCONFIG.CONFIGINFO.GPIO.PA8.OutputLevel=High
+GPIOCONFIG.CONFIGINFO.GPIO.PA8.PullUpDown=Pull-up
+GPIOCONFIG.CONFIGINFO.GPIO.PA8.ModifyFlag=TRUE
 GPIOCONFIG.CONFIGINFO.GPIO.PA9.OutputLevel=High
 GPIOCONFIG.CONFIGINFO.GPIO.PA9.PullUpDown=Pull-up
 GPIOCONFIG.CONFIGINFO.GPIO.PA9.ModifyFlag=TRUE
@@ -108,8 +99,6 @@ NVIC.Pendable request for system service##Enabled=TRUE
 NVIC.Pendable request for system service##PreemptionPriority=0
 NVIC.System tick timer##Enabled=TRUE
 NVIC.System tick timer##PreemptionPriority=0
-NVIC.RTC global interrupt##Enabled=TRUE
-NVIC.RTC global interrupt##PreemptionPriority=0
 NVIC.TIMER0 Break, update, trigger and commutation interrupt##Enabled=TRUE
 NVIC.TIMER0 Break, update, trigger and commutation interrupt##PreemptionPriority=2
 NVIC.USART1 global interrupt##Enabled=TRUE

@@ -78,15 +78,6 @@ void SysTick_Handler(void)
     /* user code [SysTick_IRQn local 1] end */
 }
 
-void RTC_IRQHandler(void)
-{
-    /* user code [RTC_IRQn local 0] begin */
-    /* user code [RTC_IRQn local 0] end */
-    hal_rtc_irq();
-    /* user code [RTC_IRQn local 1] begin */
-    /* user code [RTC_IRQn local 1] end */
-}
-
 void TIMER0_BRK_UP_TRG_COM_IRQHandler(void)
 {
     /* user code [TIMER0_BRK_UP_TRG_COM_IRQn local 0] begin */

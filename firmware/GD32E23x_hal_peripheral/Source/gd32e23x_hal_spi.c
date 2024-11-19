@@ -404,7 +404,7 @@ int32_t hal_spi_receive_poll(hal_spi_dev_struct *spi, uint8_t *p_rxbuffer,uint32
     __IO uint16_t tmp_crc = 0U;
     uint32_t tick_start = 0;
     if ((SPI_MASTER == __HAL_SPI_GET_DEVICE_MODE(spi->periph)) && (SPI_TRANSMODE_FULLDUPLEX == __HAL_SPI_GET_TRANS_MODE(spi->periph))){
-        spi->state = HAL_SPI_STATE_BUSY_RX;
+        //spi->state = HAL_SPI_STATE_BUSY_RX;
         /* call transmit-receive function to send dummy data generate clock */
         return hal_spi_transmit_receive_poll(spi, p_rxbuffer, p_rxbuffer, length, timeout_ms);
     }    

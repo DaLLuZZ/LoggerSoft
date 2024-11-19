@@ -209,19 +209,26 @@ int main(void)
 	SX1278_hw.spi = &spi0_info;
 	SX1278.hw = &SX1278_hw;
 
-	SX1278_init(&SX1278, 434000000, SX1278_POWER_17DBM, SX1278_LORA_SF_7,
-	SX1278_LORA_BW_125KHZ, SX1278_LORA_CR_4_5, SX1278_LORA_CRC_EN, 10);
+	SX1278_init(&SX1278, 440000000, SX1278_POWER_20DBM, SX1278_LORA_SF_12,
+	SX1278_LORA_BW_125KHZ, SX1278_LORA_CR_4_8, SX1278_LORA_CRC_EN, 255);
 
-
+for (int i = 0; i < 10; i++)
+{
 	// Try to send message
-	message_length = sprintf(buffer, "Ku-ku, we have %d.%d degrees here!\r\n\r\n", bme_data.temp_int, bme_data.temp_fract);
-	uint32_t ret1 = SX1278_LoRaEntryTx(&SX1278, message_length, 2000);
+	message_length = sprintf(buffer, "ZQWEUXYUIQPSDFGHJKLZXCZZZMQWEUXYUIQPSDFGHJKLZXCZZZMQWEUXYUIQPSDFGHJKLZXCCSDFGGHJKLZXCZZZCMXCZJHXUWKEUQGFQPUEQIBJHGFJDKGFHZCICNBV");
+	//message_length = sprintf(buffer, "AAAAA SPASITE NAS POZHALUYSTA Ku-ku, we have %d.%d degrees here!\r\n\r\n", bme_data.temp_int, bme_data.temp_fract);
+	uint32_t ret1 = SX1278_LoRaEntryTx(&SX1278, message_length + 1, 2000);
 
-    hal_uart_transmit_poll(&uart1_info, buffer, message_length, 1000);
+    hal_uart_transmit_poll(&uart1_info, buffer, message_length + 1, 1000);
 
-	uint32_t ret2 = SX1278_LoRaTxPacket(&SX1278, (uint8_t*) buffer, message_length, 2000);
+	uint32_t ret2 = SX1278_LoRaTxPacket(&SX1278, (uint8_t*) buffer, message_length + 1, 2000);
     message_length = sprintf(buffer, "Entry: %d; Send: %d\r\n", ret1, ret2);
     hal_uart_transmit_poll(&uart1_info, buffer, message_length, 1000);
+
+    hal_basetick_delay_ms(5);
+}
+
+//hal_basetick_delay_ms(500000);
 
     // Have a timeout
 
@@ -249,7 +256,9 @@ int main(void)
     // rtc_normal_2_bcd
 
     // try to sleep
-    hal_pmu_to_sleepmode(HAL_WFI_CMD);
+    hal_basetick_suspend();
+    hal_pmu_to_deepsleepmode(HAL_PMU_LDO_LOWPOWER, HAL_WFI_CMD);
+    //hal_basetick_resume();
 
     message_length = sprintf(buffer, "good morning!\r\n");
     hal_uart_transmit_poll(&uart1_info, buffer, message_length, 1000);
@@ -260,7 +269,7 @@ int main(void)
 
     /* user code [local 2] end */
 
-    while(1) {
+    while(1){
         /* user code [local 3] begin */
 
         /* user code [local 3] end */

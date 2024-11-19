@@ -1382,7 +1382,7 @@ int32_t hal_rtc_backup_data_write(uint32_t backup_index, uint32_t data)
     }    
 #endif /* 1 == HAL_PARAMETER_CHECK */
     
-    reg = RTC_BKP0 + (backup_index << 2);
+    reg = RTC + 0x50U + (backup_index << 2);
     *(__IO uint32_t *)reg = data;
     
     return HAL_ERR_NONE;
@@ -1408,7 +1408,7 @@ int32_t hal_rtc_backup_data_read(uint32_t backup_index, uint32_t *data)
     } 
 #endif /* 1 == HAL_PARAMETER_CHECK */
     
-    reg = RTC_BKP0 + (backup_index << 2);
+    reg = RTC + 0x50U + (backup_index << 2);
     *data = (*(__IO uint32_t *)reg);
     
     return HAL_ERR_NONE;
