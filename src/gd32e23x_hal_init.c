@@ -109,9 +109,83 @@ void msd_gpio_init(void)
     /* user code [gpio_init local 0] end */
     hal_gpio_init_struct gpio_init_parameter;
 
+    hal_rcu_periph_clk_enable(RCU_GPIOC);
+    hal_rcu_periph_clk_enable(RCU_GPIOF);
     hal_rcu_periph_clk_enable(RCU_GPIOB);
     hal_rcu_periph_clk_enable(RCU_GPIOA);
     hal_gpio_struct_init(&gpio_init_parameter);
+
+    gpio_init_parameter.mode = HAL_GPIO_MODE_ANALOG;
+    gpio_init_parameter.pull = HAL_GPIO_PULL_NONE;
+    gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_2MHZ;
+    gpio_init_parameter.af = HAL_GPIO_AF_0;
+    hal_gpio_init(GPIOF, GPIO_PIN_7, &gpio_init_parameter);
+
+    gpio_init_parameter.mode = HAL_GPIO_MODE_ANALOG;
+    gpio_init_parameter.pull = HAL_GPIO_PULL_NONE;
+    gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_2MHZ;
+    gpio_init_parameter.af = HAL_GPIO_AF_0;
+    hal_gpio_init(GPIOB, GPIO_PIN_3, &gpio_init_parameter);
+
+    gpio_init_parameter.mode = HAL_GPIO_MODE_ANALOG;
+    gpio_init_parameter.pull = HAL_GPIO_PULL_NONE;
+    gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_2MHZ;
+    gpio_init_parameter.af = HAL_GPIO_AF_0;
+    hal_gpio_init(GPIOB, GPIO_PIN_2, &gpio_init_parameter);
+
+    gpio_init_parameter.mode = HAL_GPIO_MODE_ANALOG;
+    gpio_init_parameter.pull = HAL_GPIO_PULL_NONE;
+    gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_2MHZ;
+    gpio_init_parameter.af = HAL_GPIO_AF_0;
+    hal_gpio_init(GPIOF, GPIO_PIN_6, &gpio_init_parameter);
+
+    gpio_init_parameter.mode = HAL_GPIO_MODE_ANALOG;
+    gpio_init_parameter.pull = HAL_GPIO_PULL_NONE;
+    gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_2MHZ;
+    gpio_init_parameter.af = HAL_GPIO_AF_0;
+    hal_gpio_init(GPIOB, GPIO_PIN_5, &gpio_init_parameter);
+
+    gpio_init_parameter.mode = HAL_GPIO_MODE_ANALOG;
+    gpio_init_parameter.pull = HAL_GPIO_PULL_NONE;
+    gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_2MHZ;
+    gpio_init_parameter.af = HAL_GPIO_AF_0;
+    hal_gpio_init(GPIOB, GPIO_PIN_4, &gpio_init_parameter);
+
+    gpio_init_parameter.mode = HAL_GPIO_MODE_ANALOG;
+    gpio_init_parameter.pull = HAL_GPIO_PULL_NONE;
+    gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_2MHZ;
+    gpio_init_parameter.af = HAL_GPIO_AF_0;
+    hal_gpio_init(GPIOB, GPIO_PIN_7, &gpio_init_parameter);
+
+    gpio_init_parameter.mode = HAL_GPIO_MODE_ANALOG;
+    gpio_init_parameter.pull = HAL_GPIO_PULL_NONE;
+    gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_2MHZ;
+    gpio_init_parameter.af = HAL_GPIO_AF_0;
+    hal_gpio_init(GPIOB, GPIO_PIN_6, &gpio_init_parameter);
+
+    gpio_init_parameter.mode = HAL_GPIO_MODE_ANALOG;
+    gpio_init_parameter.pull = HAL_GPIO_PULL_NONE;
+    gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_2MHZ;
+    gpio_init_parameter.af = HAL_GPIO_AF_0;
+    hal_gpio_init(GPIOB, GPIO_PIN_9, &gpio_init_parameter);
+
+    gpio_init_parameter.mode = HAL_GPIO_MODE_ANALOG;
+    gpio_init_parameter.pull = HAL_GPIO_PULL_NONE;
+    gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_2MHZ;
+    gpio_init_parameter.af = HAL_GPIO_AF_0;
+    hal_gpio_init(GPIOB, GPIO_PIN_8, &gpio_init_parameter);
+
+    gpio_init_parameter.mode = HAL_GPIO_MODE_ANALOG;
+    gpio_init_parameter.pull = HAL_GPIO_PULL_NONE;
+    gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_2MHZ;
+    gpio_init_parameter.af = HAL_GPIO_AF_0;
+    hal_gpio_init(GPIOA, GPIO_PIN_0, &gpio_init_parameter);
+
+    gpio_init_parameter.mode = HAL_GPIO_MODE_ANALOG;
+    gpio_init_parameter.pull = HAL_GPIO_PULL_NONE;
+    gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_2MHZ;
+    gpio_init_parameter.af = HAL_GPIO_AF_0;
+    hal_gpio_init(GPIOA, GPIO_PIN_1, &gpio_init_parameter);
 
     hal_gpio_bit_set(GPIOA, GPIO_PIN_4);
     gpio_init_parameter.mode = HAL_GPIO_MODE_OUTPUT_PP;
@@ -119,25 +193,6 @@ void msd_gpio_init(void)
     gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_50MHZ;
     gpio_init_parameter.af = HAL_GPIO_AF_0;
     hal_gpio_init(GPIOA, GPIO_PIN_4, &gpio_init_parameter);
-
-    gpio_init_parameter.mode = HAL_GPIO_MODE_INPUT;
-    gpio_init_parameter.pull = HAL_GPIO_PULL_NONE;
-    gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_50MHZ;
-    gpio_init_parameter.af = HAL_GPIO_AF_0;
-    hal_gpio_init(GPIOA, GPIO_PIN_11, &gpio_init_parameter);
-
-    gpio_init_parameter.mode = HAL_GPIO_MODE_INPUT;
-    gpio_init_parameter.pull = HAL_GPIO_PULL_NONE;
-    gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_50MHZ;
-    gpio_init_parameter.af = HAL_GPIO_AF_0;
-    hal_gpio_init(GPIOA, GPIO_PIN_10, &gpio_init_parameter);
-
-    hal_gpio_bit_set(GPIOB, GPIO_PIN_12);
-    gpio_init_parameter.mode = HAL_GPIO_MODE_OUTPUT_PP;
-    gpio_init_parameter.pull = HAL_GPIO_PULL_UP;
-    gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_50MHZ;
-    gpio_init_parameter.af = HAL_GPIO_AF_0;
-    hal_gpio_init(GPIOB, GPIO_PIN_12, &gpio_init_parameter);
 
     hal_gpio_bit_set(GPIOA, GPIO_PIN_8);
     gpio_init_parameter.mode = HAL_GPIO_MODE_OUTPUT_PP;
@@ -153,6 +208,85 @@ void msd_gpio_init(void)
     gpio_init_parameter.af = HAL_GPIO_AF_0;
     hal_gpio_init(GPIOA, GPIO_PIN_9, &gpio_init_parameter);
 
+    gpio_init_parameter.mode = HAL_GPIO_MODE_ANALOG;
+    gpio_init_parameter.pull = HAL_GPIO_PULL_NONE;
+    gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_2MHZ;
+    gpio_init_parameter.af = HAL_GPIO_AF_0;
+    hal_gpio_init(GPIOC, GPIO_PIN_13, &gpio_init_parameter);
+
+    gpio_init_parameter.mode = HAL_GPIO_MODE_ANALOG;
+    gpio_init_parameter.pull = HAL_GPIO_PULL_NONE;
+    gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_2MHZ;
+    gpio_init_parameter.af = HAL_GPIO_AF_0;
+    hal_gpio_init(GPIOA, GPIO_PIN_15, &gpio_init_parameter);
+
+    gpio_init_parameter.mode = HAL_GPIO_MODE_ANALOG;
+    gpio_init_parameter.pull = HAL_GPIO_PULL_NONE;
+    gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_2MHZ;
+    gpio_init_parameter.af = HAL_GPIO_AF_0;
+    hal_gpio_init(GPIOC, GPIO_PIN_15, &gpio_init_parameter);
+
+    gpio_init_parameter.mode = HAL_GPIO_MODE_ANALOG;
+    gpio_init_parameter.pull = HAL_GPIO_PULL_NONE;
+    gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_2MHZ;
+    gpio_init_parameter.af = HAL_GPIO_AF_0;
+    hal_gpio_init(GPIOC, GPIO_PIN_14, &gpio_init_parameter);
+
+    gpio_init_parameter.mode = HAL_GPIO_MODE_INPUT;
+    gpio_init_parameter.pull = HAL_GPIO_PULL_NONE;
+    gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_50MHZ;
+    gpio_init_parameter.af = HAL_GPIO_AF_0;
+    hal_gpio_init(GPIOA, GPIO_PIN_11, &gpio_init_parameter);
+
+    gpio_init_parameter.mode = HAL_GPIO_MODE_ANALOG;
+    gpio_init_parameter.pull = HAL_GPIO_PULL_NONE;
+    gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_2MHZ;
+    gpio_init_parameter.af = HAL_GPIO_AF_0;
+    hal_gpio_init(GPIOB, GPIO_PIN_10, &gpio_init_parameter);
+
+    gpio_init_parameter.mode = HAL_GPIO_MODE_INPUT;
+    gpio_init_parameter.pull = HAL_GPIO_PULL_NONE;
+    gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_50MHZ;
+    gpio_init_parameter.af = HAL_GPIO_AF_0;
+    hal_gpio_init(GPIOA, GPIO_PIN_10, &gpio_init_parameter);
+
+    hal_gpio_bit_set(GPIOB, GPIO_PIN_12);
+    gpio_init_parameter.mode = HAL_GPIO_MODE_OUTPUT_PP;
+    gpio_init_parameter.pull = HAL_GPIO_PULL_UP;
+    gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_50MHZ;
+    gpio_init_parameter.af = HAL_GPIO_AF_0;
+    hal_gpio_init(GPIOB, GPIO_PIN_12, &gpio_init_parameter);
+
+    gpio_init_parameter.mode = HAL_GPIO_MODE_ANALOG;
+    gpio_init_parameter.pull = HAL_GPIO_PULL_NONE;
+    gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_2MHZ;
+    gpio_init_parameter.af = HAL_GPIO_AF_0;
+    hal_gpio_init(GPIOB, GPIO_PIN_11, &gpio_init_parameter);
+
+    gpio_init_parameter.mode = HAL_GPIO_MODE_ANALOG;
+    gpio_init_parameter.pull = HAL_GPIO_PULL_NONE;
+    gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_2MHZ;
+    gpio_init_parameter.af = HAL_GPIO_AF_0;
+    hal_gpio_init(GPIOA, GPIO_PIN_12, &gpio_init_parameter);
+
+    gpio_init_parameter.mode = HAL_GPIO_MODE_ANALOG;
+    gpio_init_parameter.pull = HAL_GPIO_PULL_NONE;
+    gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_2MHZ;
+    gpio_init_parameter.af = HAL_GPIO_AF_0;
+    hal_gpio_init(GPIOF, GPIO_PIN_1, &gpio_init_parameter);
+
+    gpio_init_parameter.mode = HAL_GPIO_MODE_ANALOG;
+    gpio_init_parameter.pull = HAL_GPIO_PULL_NONE;
+    gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_2MHZ;
+    gpio_init_parameter.af = HAL_GPIO_AF_0;
+    hal_gpio_init(GPIOF, GPIO_PIN_0, &gpio_init_parameter);
+
+    gpio_init_parameter.mode = HAL_GPIO_MODE_ANALOG;
+    gpio_init_parameter.pull = HAL_GPIO_PULL_NONE;
+    gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_2MHZ;
+    gpio_init_parameter.af = HAL_GPIO_AF_0;
+    hal_gpio_init(GPIOB, GPIO_PIN_0, &gpio_init_parameter);
+
     /* user code [gpio_init local 1] begin */
     /* user code [gpio_init local 1] end */
 }
@@ -161,14 +295,38 @@ void msd_gpio_deinit(void)
 {
     /* user code [gpio_deinit local 0] begin */
     /* user code [gpio_deinit local 0] end */
+    hal_rcu_periph_clk_disable(RCU_GPIOC);
+    hal_rcu_periph_clk_disable(RCU_GPIOF);
     hal_rcu_periph_clk_disable(RCU_GPIOB);
     hal_rcu_periph_clk_disable(RCU_GPIOA);
+    hal_gpio_deinit(GPIOF, GPIO_PIN_7);
+    hal_gpio_deinit(GPIOB, GPIO_PIN_3);
+    hal_gpio_deinit(GPIOB, GPIO_PIN_2);
+    hal_gpio_deinit(GPIOF, GPIO_PIN_6);
+    hal_gpio_deinit(GPIOB, GPIO_PIN_5);
+    hal_gpio_deinit(GPIOB, GPIO_PIN_4);
+    hal_gpio_deinit(GPIOB, GPIO_PIN_7);
+    hal_gpio_deinit(GPIOB, GPIO_PIN_6);
+    hal_gpio_deinit(GPIOB, GPIO_PIN_9);
+    hal_gpio_deinit(GPIOB, GPIO_PIN_8);
+    hal_gpio_deinit(GPIOA, GPIO_PIN_0);
+    hal_gpio_deinit(GPIOA, GPIO_PIN_1);
     hal_gpio_deinit(GPIOA, GPIO_PIN_4);
-    hal_gpio_deinit(GPIOA, GPIO_PIN_11);
-    hal_gpio_deinit(GPIOA, GPIO_PIN_10);
-    hal_gpio_deinit(GPIOB, GPIO_PIN_12);
     hal_gpio_deinit(GPIOA, GPIO_PIN_8);
     hal_gpio_deinit(GPIOA, GPIO_PIN_9);
+    hal_gpio_deinit(GPIOC, GPIO_PIN_13);
+    hal_gpio_deinit(GPIOA, GPIO_PIN_15);
+    hal_gpio_deinit(GPIOC, GPIO_PIN_15);
+    hal_gpio_deinit(GPIOC, GPIO_PIN_14);
+    hal_gpio_deinit(GPIOA, GPIO_PIN_11);
+    hal_gpio_deinit(GPIOB, GPIO_PIN_10);
+    hal_gpio_deinit(GPIOA, GPIO_PIN_10);
+    hal_gpio_deinit(GPIOB, GPIO_PIN_12);
+    hal_gpio_deinit(GPIOB, GPIO_PIN_11);
+    hal_gpio_deinit(GPIOA, GPIO_PIN_12);
+    hal_gpio_deinit(GPIOF, GPIO_PIN_1);
+    hal_gpio_deinit(GPIOF, GPIO_PIN_0);
+    hal_gpio_deinit(GPIOB, GPIO_PIN_0);
     /* user code [gpio_deinit local 1] begin */
     /* user code [gpio_deinit local 1] end */
 }
@@ -323,7 +481,7 @@ void msd_spi0_init(void)
     spi0_init_parameter.frame_size = SPI_FRAMESIZE_8BIT;
     spi0_init_parameter.endian = SPI_ENDIAN_MSB;
     spi0_init_parameter.clock_polarity_phase = SPI_CK_PL_LOW_PH_1EDGE;
-    spi0_init_parameter.prescale = SPI_PSC_2;
+    spi0_init_parameter.prescale = SPI_PSC_16;
     spi0_init_parameter.crc_calculation = SPI_CRC_DISABLE;
     spi0_init_parameter.crc_poly = 7;
     spi0_init_parameter.nss = SPI_NSS_SOFT;

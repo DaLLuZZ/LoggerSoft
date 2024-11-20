@@ -307,7 +307,7 @@ int8_t BME280_Init(BME280_t *Dev, BME280_Driver_t *Driver){
 	if(BME280_OK != res) return res;
 
 	/* Start-up time = 2ms */
-	Dev->driver->delay(2);
+	Dev->driver->delay(4);
 
 	/* read and check chip ID */
 	res = Dev->driver->read(BME280_ID_ADDR, &id, 1, Dev->driver);

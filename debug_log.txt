@@ -6,16 +6,16 @@ Info: CMSIS-DAP: swd used
 Info: GD-Link speed 2000 KHz
 Info: Flash size 64 KBytes
 Info: The core supports 4 hardware breakpoints
-we got a new connection, port=5099, client_count=1, ip=127.0.0.1, client port=52057
+we got a new connection, port=5099, client_count=1, ip=127.0.0.1, client port=56006
 Info: Erase Successfully 
 Info: Download Successfully 
 Info: Target state: halted
       Target halted due to debug request
-      xPSR: 0x61000000, PC: 0x0800242C, MSP: 0x20001EB8
+      xPSR: 0x61000000, PC: 0x08002754, MSP: 0x20001EB8
 Info: Target state: halted
       Target halted due to debug request
-      xPSR: 0x41000000, PC: 0x08000B3A, MSP: 0x20001E90
+      xPSR: 0x41000000, PC: 0x08000AF6, MSP: 0x20001E90
 Info: Target state: halted
       Target halted due to debug request
-      xPSR: 0x01000000, PC: 0x08002814, MSP: 0x20001EB8
+      xPSR: 0x21000000, PC: 0x08005F08, MSP: 0x20001E78
 Info: Debug terminated

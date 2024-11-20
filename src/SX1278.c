@@ -11,6 +11,7 @@
 
 uint8_t SX1278_SPIRead(SX1278_t * module, uint8_t addr) {
 	uint8_t tmp;
+	SX1278_hw_SetNSS(module->hw, 0);
 	SX1278_hw_SPICommand(module->hw, addr);
 	tmp = SX1278_hw_SPIReadByte(module->hw);
 	SX1278_hw_SetNSS(module->hw, 1);
@@ -200,7 +201,9 @@ int SX1278_LoRaEntryTx(SX1278_t * module, uint8_t length, uint32_t timeout) {
 	SX1278_SPIWrite(module, LR_RegIrqFlagsMask, 0xF7); //Open TxDone interrupt
 	SX1278_SPIWrite(module, LR_RegPayloadLength, length); //RegPayloadLength 21byte
 	addr = SX1278_SPIRead(module, LR_RegFifoTxBaseAddr); //RegFiFoTxBaseAddr
-	SX1278_SPIWrite(module, LR_RegFifoAddrPtr, addr); //RegFifoAddrPtr
+	SX1278_SPIWrite(module, LR_RegFifoAddrPtr, 0x80); //RegFifoAddrPtr, pass addr instead of 0x80
+	SX1278_SPIWrite(module, LR_RegFifoTxBaseAddr, 0x80); // comment this out
+	SX1278_SPIWrite(module, LR_RegFifoAddrPtr, 0x80); // comment this out
 
 	while (1) {
 		temp = SX1278_SPIRead(module, LR_RegPayloadLength);
@@ -208,12 +211,12 @@ int SX1278_LoRaEntryTx(SX1278_t * module, uint8_t length, uint32_t timeout) {
 			module->status = TX;
 			return 1;
 		}
-
 		if (--timeout == 0) {
-			SX1278_hw_Reset(module->hw);
-			SX1278_config(module);
+			//SX1278_hw_Reset(module->hw);
+			//SX1278_config(module);
 			return 0;
 		}
+		SX1278_hw_DelayMs(1);
 	}
 }
 
@@ -230,8 +233,8 @@ int SX1278_LoRaTxPacket(SX1278_t * module, uint8_t * txBuffer, uint8_t length,
 		}
 
 		if (--timeout == 0) {
-			SX1278_hw_Reset(module->hw);
-			SX1278_config(module);
+			//SX1278_hw_Reset(module->hw);
+			//SX1278_config(module);
 			return 0;
 		}
 		SX1278_hw_DelayMs(1);
