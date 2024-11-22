@@ -542,7 +542,7 @@ void msd_spi1_init(void)
     spi1_init_parameter.frame_size = SPI_FRAMESIZE_8BIT;
     spi1_init_parameter.endian = SPI_ENDIAN_MSB;
     spi1_init_parameter.clock_polarity_phase = SPI_CK_PL_LOW_PH_1EDGE;
-    spi1_init_parameter.prescale = SPI_PSC_2;
+    spi1_init_parameter.prescale = SPI_PSC_16;
     spi1_init_parameter.crc_calculation = SPI_CRC_DISABLE;
     spi1_init_parameter.crc_poly = 7;
     spi1_init_parameter.crc_length = SPI_CRC_8BIT;

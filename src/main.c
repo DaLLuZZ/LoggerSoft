@@ -206,7 +206,7 @@ int main(void)
 	SX1278_hw.nss.pin = SX_NSS_Pin;
 	SX1278_hw.reset.port = SX_RESET_GPIO_Port;
 	SX1278_hw.reset.pin = SX_RESET_Pin;
-	SX1278_hw.spi = &spi0_info;
+	SX1278_hw.spi = &spi1_info;
 	SX1278.hw = &SX1278_hw;
 
 	SX1278_init(&SX1278, 440000000, SX1278_POWER_20DBM, SX1278_LORA_SF_12,
