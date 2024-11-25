@@ -311,7 +311,7 @@ int8_t BME280_Init(BME280_t *Dev, BME280_Driver_t *Driver){
 
 	/* read and check chip ID */
 	res = Dev->driver->read(BME280_ID_ADDR, &id, 1, Dev->driver);
-	//if(BME280_OK != res) return BME280_INTERFACE_ERR;
+	if (BME280_OK != res) return BME280_INTERFACE_ERR;
 
 	//if(BME280_ID != id) return BME280_ID_ERR;
 

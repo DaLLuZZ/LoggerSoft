@@ -49,6 +49,15 @@ BME280_Data_t bme_data;
 SX1278_t SX1278;
 SX1278_hw_t SX1278_hw;
 
+struct txPack {
+	uint32_t device_id;
+	uint32_t msg_id;
+	float humidity;
+	float temperature;
+	float pressure;
+	float voltage;
+};
+
 
 hal_uart_user_cb uart_trns_cmpd(hal_uart_dev_struct *uart)
 {
@@ -61,7 +70,20 @@ hal_uart_user_cb uart_recv_byte(hal_uart_dev_struct *uart)
 }
 
 
+float combineToFloat(int32_t integerPart, int32_t fractionalPart)
+{
+    int32_t fractionalDigits = 0;
+    int32_t temp = fractionalPart;
 
+    while (temp > 0) {
+        temp /= 10;
+        fractionalDigits++;
+    }
+
+    float result = integerPart + fractionalPart / pow(10, fractionalDigits);
+
+    return result;
+}
 
 
 /* user code [global 0] end */
@@ -97,8 +119,9 @@ int main(void)
     /* user code [local 2] begin */
 
     char buffer[256];
+    float dataToSend[4];
     uint32_t message_length;
-    uint32_t freevalue;
+    uint16_t freevalue;
 
     // Start SPI
 
@@ -199,6 +222,14 @@ int main(void)
 	 * INIT LORA MODULE RA-01
 	 */
 
+	struct txPack pack;
+	pack.device_id = 23;
+	pack.msg_id = 1;
+	pack.humidity = 0.0f;
+	pack.temperature = 0.0f;
+	pack.pressure = 0.0f;
+	pack.voltage = 0.0f;
+
 	//initialize LoRa module
 	SX1278_hw.dio0.port = SX_DIO0_GPIO_Port;
 	SX1278_hw.dio0.pin = SX_DIO0_Pin;
@@ -215,11 +246,19 @@ int main(void)
 while (1)
 {
 	// Try to send message
-	message_length = sprintf(buffer, "bu! ispugalsya? ne boisya!");
-	//message_length = sprintf(buffer, "AAAAA SPASITE NAS POZHALUYSTA Ku-ku, we have %d.%d degrees here!\r\n\r\n", bme_data.temp_int, bme_data.temp_fract);
-	uint32_t ret1 = SX1278_LoRaEntryTx(&SX1278, message_length + 1, 2000);
-	uint32_t ret2 = SX1278_LoRaTxPacket(&SX1278, (uint8_t*) buffer, message_length + 1, 20000);
+	//message_length = sprintf(buffer, "bu! ispugalsya? ne boisya!");
+	//uint32_t ret1 = SX1278_LoRaEntryTx(&SX1278, message_length + 1, 2000);
+	//uint32_t ret2 = SX1278_LoRaTxPacket(&SX1278, (uint8_t*) buffer, message_length + 1, 20000);
 
+	pack.humidity = combineToFloat(bme_data.humidity_int, bme_data.humidity_fract);
+	pack.temperature = combineToFloat(bme_data.temp_int, bme_data.temp_fract);
+	pack.pressure = combineToFloat(bme_data.pressure_int, bme_data.pressure_fract);
+	pack.voltage = (2 * freevalue) * 0.000814f; // 2 mul because of 1/1 R-div
+
+	uint32_t ret1 = SX1278_LoRaEntryTx(&SX1278, sizeof(pack), 1000);
+	uint32_t ret2 = SX1278_LoRaTxPacket(&SX1278, (uint8_t*)(&pack), sizeof(pack), 6000);
+
+	pack.msg_id = pack.msg_id + 1;
 	hal_basetick_delay_ms(100);
 
     message_length = sprintf(buffer, "Entry: %d; Send: %d\r\n", ret1, ret2);

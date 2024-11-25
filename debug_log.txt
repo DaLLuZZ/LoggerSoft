@@ -1,0 +1,8 @@
+GD-Link GDB Server 1.5.5.26772
+Copyright (C) 2023 GigaDevice
+Info: Core type: Cortex-M23
+Info: Part No: GD32E230C8T6 
+Info: CMSIS-DAP: swd used
+Info: GD-Link speed 2000 KHz
+Info: Flash size 64 KBytes
+Info: The core supports 4 hardware breakpoints
