@@ -15,20 +15,24 @@ GD32E230C8T6 + BME280 + RA-01
 | - | - |
 | PA2 | UART0_TX |
 | PA3 | UART0_RX |
-| PA4 | RA_CS |
+| PA4 | RA_CS (ERRATA!) |
 | PA5 | SPI0_SCK |
 | PA6 | SPI0_MISO |
 | PA7 | SPI0_MOSI |
-| PA8 | BME_CS |
+| PA8 | BME_INT_CS |
 | PA9 | RA_RST |
 | PA10 | RA_DIO0 |
 | PA11 | RA_DIO1 |
+| PA12 | W25Q_CS |
 | PA13 | SWDIO |
 | PA14 | SWCLK |
 | PB1 | ADC_BAT |
-| PB12 | W25Q_CS |
 | PB13 | SPI1_SCK |
 | PB14 | SPI1_MISO |
 | PB15 | SPI1_MOSI |
 | PC14 | OSC32 |
 | PC15 | OSC32 |
+| PF0 | OSCIN |
+| PF1 | OSCOUT |
+| PF6 | I2C1_SCL |
+| PF7 | I2C1_SDA |
