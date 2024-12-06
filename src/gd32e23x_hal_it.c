@@ -63,7 +63,7 @@ void SVC_Handler(void)
 
 void RTC_IRQHandler(void)
 {
-
+	hal_rtc_irq();
 }
 
 
