@@ -29,17 +29,17 @@ struct txPack {
 #endif // USE_RA_01_SENDER
 
 
-hal_uart_user_cb uart_trns_cmpd(hal_uart_dev_struct *uart)
+void uart_trns_cmpd(hal_uart_dev_struct *uart)
 {
 
 }
 
-hal_uart_user_cb uart_recv_byte(hal_uart_dev_struct *uart)
+void uart_recv_byte(hal_uart_dev_struct *uart)
 {
 	hal_uart_transmit_interrupt(&uart1_info, "p\r\n", 3, uart_trns_cmpd);
 }
 
-hal_rtc_irq_handle_cb emptyFunc(void* ptr)
+void emptyFunc()
 {
 
 }
@@ -62,7 +62,7 @@ int main(void)
     char buffer[256];
     float dataToSend[4];
     uint32_t message_length;
-    uint16_t freevalue;
+    uint16_t adc_raw_value;
 
     // Start SPI, i2c, uart and adc
 
@@ -81,9 +81,7 @@ int main(void)
     hal_uart_transmit_poll(&uart1_info, buffer, message_length, 1000);
 
     hal_adc_regular_conversion_poll(&adc_info, 1000);
-    freevalue = hal_adc_regular_value_get(&adc_info);
-    message_length = sprintf(buffer, "ADC raw value: %d; Voltage: %.2f Volts\r\n", freevalue, freevalue * 0.00080586);
-    hal_uart_transmit_poll(&uart1_info, buffer, message_length, 1000);
+    adc_raw_value = hal_adc_regular_value_get(&adc_info);
 
 #ifdef USE_BME280_SPI
 
@@ -171,15 +169,14 @@ int main(void)
 	message_length =  sprintf(buffer, "found %s (%x)\r\n", bmp280.id == BME280_CHIP_ID ? "BME280" : "BMP280", bmp280.id);
 	hal_uart_transmit_poll(&uart1_info, buffer, message_length, 1000);
 
+	hal_basetick_delay_ms(500);
+
 	// perform single read operation
 	if (!bmp280_read_float(&bmp280, &temperature, &pressure, &humidity))
 	{
 		message_length = sprintf(buffer, "Temperature/pressure reading failed\r\n");
 		hal_uart_transmit_poll(&uart1_info, buffer, message_length, 1000);
 	}
-
-	message_length = sprintf(buffer, "Pressure: %.2f Pa; Temperature: %.2f C; Humidity: %.2f %", pressure, temperature, humidity);
-	hal_uart_transmit_poll(&uart1_info, buffer, message_length, 1000);
 
 #endif // USE_BME280_I2C
 
@@ -239,7 +236,7 @@ int main(void)
 	pack.pressure = pressure;
 #endif // USE_BME280_I2C
 
-	pack.voltage = (2 * freevalue) * 0.000814f; // 2 mul because of 1/1 R-div
+	pack.voltage = (2 * adc_raw_value) * 0.000814f; // 2 mul because of 1/1 R-div
 
 	uint32_t ret1 = SX1278_LoRaEntryTx(&SX1278, sizeof(pack), 1000);
 	uint32_t ret2 = SX1278_LoRaTxPacket(&SX1278, (uint8_t*)(&pack), sizeof(pack), 6000);
@@ -283,7 +280,7 @@ int main(void)
 		// Wake up ADC, get value and sleep
 		hal_adc_start(&adc_info);
 		hal_adc_regular_conversion_poll(&adc_info, 1000);
-		freevalue = hal_adc_regular_value_get(&adc_info);
+		adc_raw_value = hal_adc_regular_value_get(&adc_info);
 		hal_adc_stop(&adc_info);
 
 #ifdef USE_BME280_SPI
@@ -317,7 +314,7 @@ int main(void)
 		pack.temperature = temperature;
 		pack.pressure = pressure;
 #endif
-		pack.voltage = (2 * freevalue) * 0.000814f; // 2 mul because of 1/1 R-div
+		pack.voltage = (2 * adc_raw_value) * 0.000814f; // 2 mul because of 1/1 R-div
 
 		// START Ra-01 SPI, wake up Ra-01, send packet, sleep Ra-01, stop Ra-01 SPI
 		hal_spi_start(SX1278_hw.spi);
@@ -365,15 +362,11 @@ int main(void)
 		rtc_flag_clear(RTC_FLAG_ALARM0);
 		rtc_current_time_get(&rtc_initpara_struct);
 
-		hal_basetick_delay_ms(10000);
+		hal_basetick_delay_ms(1500);
 
     }
 
     // try to receive uart
     hal_uart_receive_interrupt(&uart1_info, buffer, 1, uart_recv_byte);
 
-    while(1) {
-
-    }
 }
-

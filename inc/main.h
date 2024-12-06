@@ -4,10 +4,11 @@
 #define LOGGER_ID 29
 //#define USE_BME280_SPI
 #define USE_BME280_I2C
-#define USE_W25Q_EXT_FLASH
+//#define USE_W25Q_EXT_FLASH
 #define USE_RA_01_SENDER
 
 #include <stdint.h>
+#include <stdio.h>
 
 #ifdef USE_BME280_SPI
 #include "bme280.h"

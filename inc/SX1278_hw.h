@@ -16,8 +16,8 @@ extern "C" {
 #endif
 
 typedef struct {
-	int pin;
-	int * port;
+	long unsigned int pin;
+	long unsigned int port;
 } SX1278_hw_dio_t;
 
 typedef struct {
