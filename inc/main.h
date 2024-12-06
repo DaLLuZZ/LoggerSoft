@@ -2,10 +2,12 @@
 #define MAIN_H_
 
 #define LOGGER_ID 29
+
 //#define USE_BME280_SPI
 #define USE_BME280_I2C
 //#define USE_W25Q_EXT_FLASH
 #define USE_RA_01_SENDER
+#define USE_MCU_DEEPSLEEP_MODE
 
 #include <stdint.h>
 #include <stdio.h>

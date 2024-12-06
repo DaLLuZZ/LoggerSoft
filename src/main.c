@@ -253,6 +253,8 @@ int main(void)
 
     hal_basetick_delay_ms(10000);
 
+#ifdef USE_MCU_DEEPSLEEP_MODE
+
     // INIT ALARM FOR RTC
 
     hal_rtc_alarm_struct rtc_alarm_time;
@@ -262,7 +264,7 @@ int main(void)
     rtc_alarm_time.rtc_alarm_second = 0x50;
     hal_rtc_alarm_config(&rtc_alarm_time);
 
-    // HERE STARTS REGULAR CODE
+#endif // USE_MCU_DEEPSLEEP_MODE
 
     while (1)
     {
@@ -320,7 +322,7 @@ int main(void)
 		hal_spi_start(SX1278_hw.spi);
 		SX1278_standby(&SX1278);
 		SX1278_LoRaEntryTx(&SX1278, sizeof(pack), 1000);
-		SX1278_LoRaTxPacket(&SX1278, (uint8_t*)(&pack), sizeof(pack), 6000);
+		SX1278_LoRaTxPacket(&SX1278, (uint8_t*)(&pack), sizeof(pack), 10000);
 		SX1278_sleep(&SX1278);
 		hal_spi_stop(SX1278_hw.spi);
 		pack.msg_id += 1; // Increment msg_id for next message
@@ -335,6 +337,8 @@ int main(void)
 		msd_timer2_deinit();
 		msd_usart1_deinit();
 		msd_i2c1_deinit();
+
+#ifdef USE_MCU_DEEPSLEEP_MODE
 
 		rtc_parameter_struct rtc_initpara_struct;
 		// rtc alarm config and sleep until alarm, then wake up and disable alarm
@@ -361,6 +365,8 @@ int main(void)
 		rtc_interrupt_disable(RTC_INT_ALARM);
 		rtc_flag_clear(RTC_FLAG_ALARM0);
 		rtc_current_time_get(&rtc_initpara_struct);
+
+#endif // USE_MCU_DEEPSLEEP_MODE
 
 		hal_basetick_delay_ms(1500);
 
