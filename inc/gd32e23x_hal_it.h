@@ -51,7 +51,7 @@ void TIMER0_BRK_UP_TRG_COM_IRQHandler(void);
 void USART1_IRQHandler(void);
 
 /* user code [global 1] begin */
-
+void RTC_IRQHandler(void);
 /* user code [global 1] end */
 
 #endif/*GD32E23X_HAL_IT_H*/

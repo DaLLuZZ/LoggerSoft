@@ -61,6 +61,12 @@ void SVC_Handler(void)
     /* user code [SVCall_IRQn local 1] end */
 }
 
+void RTC_IRQHandler(void)
+{
+
+}
+
+
 void PendSV_Handler(void)
 {
     /* user code [PendSV_IRQn local 0] begin */
