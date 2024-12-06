@@ -49,6 +49,8 @@ extern "C" {
 #define USE_FORCED_MODE
 ///@}
 
+float combineToFloat(int32_t integerPart, int32_t fractionalPart);
+
 /**
  * @defgroup BME280_Pubfunc Public functions
  * @brief Use these functions only

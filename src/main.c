@@ -1,50 +1,19 @@
-/*
-    \file  main.c
-*/
-/*
-    Copyright (c) 2024, GigaDevice Semiconductor Inc.
-
-    All rights reserved.
-
-    Redistribution and use in source and binary forms, with or without modification,
-are permitted provided that the following conditions are met:
-
-    1. Redistributions of source code must retain the above copyright notice, this 
-       list of conditions and the following disclaimer.
-    2. Redistributions in binary form must reproduce the above copyright notice, 
-       this list of conditions and the following disclaimer in the documentation 
-       and/or other materials provided with the distribution.
-    3. Neither the name of the copyright holder nor the names of its contributors 
-       may be used to endorse or promote products derived from this software without 
-       specific prior written permission.
-
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED 
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
-IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, 
-INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
-NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR 
-PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, 
-WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
-ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY 
-OF SUCH DAMAGE.
-*/
 #include "gd32e23x_hal.h"
 #include "gd32e23x_hal_init.h"
-/* user code [global 0] begin */
-
-
-
-
 
 #include "main.h"
 
-
+#ifdef USE_BME280_SPI
 BME280_t bme;
 BME280_Driver_t bme_drv;
 struct spi_bus_data bme_spi;
 BME280_Config_t bme_config;
 BME280_Data_t bme_data;
+#endif
+
+#ifdef USE_BME280_I2C
+BMP280_HandleTypedef bmp280;
+#endif
 
 SX1278_t SX1278;
 SX1278_hw_t SX1278_hw;
@@ -69,50 +38,19 @@ hal_uart_user_cb uart_recv_byte(hal_uart_dev_struct *uart)
 	hal_uart_transmit_interrupt(&uart1_info, "p\r\n", 3, uart_trns_cmpd);
 }
 
-
-float combineToFloat(int32_t integerPart, int32_t fractionalPart)
-{
-    int32_t fractionalDigits = 0;
-    int32_t temp = fractionalPart;
-
-    while (temp > 0) {
-        temp /= 10;
-        fractionalDigits++;
-    }
-
-    float result = integerPart + fractionalPart / pow(10, fractionalDigits);
-
-    return result;
-}
-
 hal_rtc_irq_handle_cb emptyFunc(void* ptr)
 {
 
 }
 
-/* user code [global 0] end */
-
-/*!
-    \brief      main function
-    \param[in]  none
-    \param[out] none
-    \retval     none
-*/
 int main(void)
 {
-    /* user code [local 0] begin */
-
-    /* user code [local 0] end */
-
     msd_system_init();
     msd_clock_init();
-    /* user code [local 1] begin */
 
-    /* user code [local 1] end */
     msd_gpio_init();
     msd_adc_init();
-    msd_crc_init();
-    msd_dbg_init();
+    msd_i2c1_init();
     msd_rtc_init();
     msd_spi0_init();
     msd_spi1_init();
@@ -120,17 +58,16 @@ int main(void)
     msd_timer2_init();
     msd_usart1_init();
 
-    /* user code [local 2] begin */
-
     char buffer[256];
     float dataToSend[4];
     uint32_t message_length;
     uint16_t freevalue;
 
-    // Start SPI
+    // Start SPI, i2c, uart and adc
 
     hal_spi_start(&spi0_info);
     hal_spi_start(&spi1_info);
+    hal_i2c_start(&i2c1_info);
     hal_uart_start(&uart1_info);
     hal_adc_start(&adc_info);
 
@@ -147,8 +84,10 @@ int main(void)
     message_length = sprintf(buffer, "ADC raw value: %d; Voltage: %.2f Volts\r\n", freevalue, freevalue * 0.00080586);
     hal_uart_transmit_poll(&uart1_info, buffer, message_length, 1000);
 
+#ifdef USE_BME280_SPI
+
     /*
-     * INIT BME
+     * INIT BME SPI
      */
     message_length = sprintf(buffer, "Init BME...\r\n");
     hal_uart_transmit_poll(&uart1_info, buffer, message_length, 1000);
@@ -209,6 +148,39 @@ int main(void)
     message_length = sprintf(buffer, "H: %d.%d   T: %d.%d   P: %d.%d...\r\n", bme_data.humidity_int, bme_data.humidity_fract, bme_data.temp_int, bme_data.temp_fract, bme_data.pressure_int, bme_data.pressure_fract);
     hal_uart_transmit_poll(&uart1_info, buffer, message_length, 1000);
 
+#endif // USE_BME280_SPI
+
+#ifdef USE_BME280_I2C
+
+    float pressure, temperature, humidity;
+
+    /*
+     * INIT BME I2C
+     */
+	bmp280_init_default_params(&bmp280.params);
+	bmp280.addr = BMP280_I2C_ADDRESS_0;
+	bmp280.i2c = &i2c1_info;
+
+	if (!bmp280_init(&bmp280, &bmp280.params))
+	{
+		message_length = sprintf(buffer, "Configuring BME failed...\r\n");
+		hal_uart_transmit_poll(&uart1_info, buffer, message_length, 1000);
+	}
+
+	message_length =  sprintf(buffer, "found %s (%x)\r\n", bmp280.id == BME280_CHIP_ID ? "BME280" : "BMP280", bmp280.id);
+	hal_uart_transmit_poll(&uart1_info, buffer, message_length, 1000);
+
+	// perform single read operation
+	if (!bmp280_read_float(&bmp280, &temperature, &pressure, &humidity))
+	{
+		message_length = sprintf(buffer, "Temperature/pressure reading failed\r\n");
+		hal_uart_transmit_poll(&uart1_info, buffer, message_length, 1000);
+	}
+
+	message_length = sprintf(buffer, "Pressure: %.2f Pa; Temperature: %.2f C; Humidity: %.2f %", pressure, temperature, humidity);
+	hal_uart_transmit_poll(&uart1_info, buffer, message_length, 1000);
+
+#endif // USE_BME280_I2C
 
 	/*
 	 * INIT EXTERNAL FLASH
@@ -227,7 +199,7 @@ int main(void)
 	 */
 
 	struct txPack pack;
-	pack.device_id = 27;
+	pack.device_id = LOGGER_ID;
 	pack.msg_id = 1;
 	pack.humidity = 0.0f;
 	pack.temperature = 0.0f;
@@ -252,9 +224,18 @@ int main(void)
 	//uint32_t ret1 = SX1278_LoRaEntryTx(&SX1278, message_length + 1, 2000);
 	//uint32_t ret2 = SX1278_LoRaTxPacket(&SX1278, (uint8_t*) buffer, message_length + 1, 20000);
 
+#ifdef USE_BME280_SPI
 	pack.humidity = combineToFloat(bme_data.humidity_int, bme_data.humidity_fract);
 	pack.temperature = combineToFloat(bme_data.temp_int, bme_data.temp_fract);
 	pack.pressure = combineToFloat(bme_data.pressure_int, bme_data.pressure_fract);
+#endif
+
+#ifdef USE_BME280_I2C
+	pack.humidity = humidity;
+	pack.temperature = temperature;
+	pack.pressure = pressure;
+#endif
+
 	pack.voltage = (2 * freevalue) * 0.000814f; // 2 mul because of 1/1 R-div
 
 	uint32_t ret1 = SX1278_LoRaEntryTx(&SX1278, sizeof(pack), 1000);
@@ -287,12 +268,12 @@ int main(void)
 		// init all periph
 		msd_gpio_init();
 		msd_adc_init();
-		msd_crc_init();
 		msd_spi0_init();
 		msd_spi1_init();
 		msd_timer0_init();
 		msd_timer2_init();
 		msd_usart1_init();
+		msd_i2c1_init();
 
 		// Wake up ADC, get value and sleep
 		hal_adc_start(&adc_info);
@@ -300,6 +281,7 @@ int main(void)
 		freevalue = hal_adc_regular_value_get(&adc_info);
 		hal_adc_stop(&adc_info);
 
+#ifdef USE_BME280_SPI
 		// Wake up BME's SPI, wake up bme, read values, sleep bme, stop BME's SPI
 		hal_spi_start(bme_spi.spi_handle);
 		bme_config.mode = BME280_NORMALMODE;
@@ -308,11 +290,27 @@ int main(void)
 		bme_config.mode = BME280_SLEEPMODE;
 		BME280_ConfigureAll(&bme, &bme_config);
 		hal_spi_stop(bme_spi.spi_handle);
+#endif
+#ifdef USE_BME280_I2C
+		// Wake up BME's I2C, wake up bme, read values, sleep bme, stop BME's I2C
+		hal_i2c_start(bmp280.i2c);
+		bmp280_wakeup(&bmp280);
+		bmp280_read_float(&bmp280, &temperature, &pressure, &humidity);
+		bmp280_sleep(&bmp280);
+		hal_i2c_stop(bmp280.i2c);
+#endif
 
 		// Fill pack with values before sending
+#ifdef USE_BME280_SPI
 		pack.humidity = combineToFloat(bme_data.humidity_int, bme_data.humidity_fract);
 		pack.temperature = combineToFloat(bme_data.temp_int, bme_data.temp_fract);
 		pack.pressure = combineToFloat(bme_data.pressure_int, bme_data.pressure_fract);
+#endif
+#ifdef USE_BME280_I2C
+		pack.humidity = humidity;
+		pack.temperature = temperature;
+		pack.pressure = pressure;
+#endif
 		pack.voltage = (2 * freevalue) * 0.000814f; // 2 mul because of 1/1 R-div
 
 		// START Ra-01 SPI, wake up Ra-01, send packet, sleep Ra-01, stop Ra-01 SPI
@@ -327,12 +325,12 @@ int main(void)
 		// deinit all periph
 		msd_gpio_deinit();
 		msd_adc_deinit();
-		msd_crc_deinit();
 		msd_spi0_deinit();
 		msd_spi1_deinit();
 		msd_timer0_deinit();
 		msd_timer2_deinit();
 		msd_usart1_deinit();
+		msd_i2c1_deinit();
 
 		rtc_parameter_struct rtc_initpara_struct;
 		// rtc alarm config and sleep until alarm, then wake up and disable alarm
@@ -364,53 +362,11 @@ int main(void)
 
     }
 
-    // HERE ENDS REGULAR CODE
-
-	// Try to make ra-01 sleep
-	SX1278_sleep(&SX1278);
-
-    message_length = sprintf(buffer, "Ra-01 sleeping rn... Delay 15 sec, then sleep of mcu\r\n");
-    hal_uart_transmit_poll(&uart1_info, buffer, message_length, 1000);
-
     // try to receive uart
     hal_uart_receive_interrupt(&uart1_info, buffer, 1, uart_recv_byte);
 
-    hal_basetick_delay_ms(15000);
+    while(1) {
 
-    message_length = sprintf(buffer, "good night!\r\n");
-    hal_uart_transmit_poll(&uart1_info, buffer, message_length, 1000);
-
-    // rtc alarm config
-    // rtc alarm enable OR hal_rtc_alarm_enable_interrupt
-    // rtc_normal_2_bcd
-
-    // try to sleep
-    hal_basetick_suspend();
-    hal_pmu_to_deepsleepmode(HAL_PMU_LDO_LOWPOWER, HAL_WFI_CMD);
-    //hal_basetick_resume();
-
-    message_length = sprintf(buffer, "good morning!\r\n");
-    hal_uart_transmit_poll(&uart1_info, buffer, message_length, 1000);
-
-    // try to receive
-    hal_uart_receive_interrupt(&uart1_info, buffer, 1, uart_recv_byte);
-
-
-    /* user code [local 2] end */
-
-    while(1){
-        /* user code [local 3] begin */
-
-        /* user code [local 3] end */
     }
 }
-/* user code [global 1] begin */
 
-
-
-
-
-
-
-
-/* user code [global 1] end */	

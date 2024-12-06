@@ -15,6 +15,10 @@
 
 //***************************************
 
+#include "main.h"
+
+#ifdef USE_BME280_SPI
+
 #include <stdint.h>
 #include <stddef.h>
 #include "bme280.h"
@@ -68,6 +72,21 @@ struct adc_regs {
 
 } __attribute__((aligned(1))) ;
 ///@}
+
+float combineToFloat(int32_t integerPart, int32_t fractionalPart)
+{
+    int32_t fractionalDigits = 0;
+    int32_t temp = fractionalPart;
+
+    while (temp > 0) {
+        temp /= 10;
+        fractionalDigits++;
+    }
+
+    float result = integerPart + fractionalPart / pow(10, fractionalDigits);
+
+    return result;
+}
 
 /**
  *@defgroup BME280_privfunct Functions
@@ -1729,5 +1748,7 @@ static int8_t bme280_busy_check(BME280_t *Dev){
 
 	return res;
 }
-#endif
+#endif // USE_FORCED_MODE
 ///@}
+
+#endif // USE_BME280_SPI

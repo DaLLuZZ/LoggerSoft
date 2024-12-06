@@ -37,8 +37,6 @@ OF SUCH DAMAGE.
 #define GD32E23X_LIBOPT_H
 
 #include "gd32e23x_adc.h"
-#include "gd32e23x_crc.h"
-#include "gd32e23x_dbg.h"
 #include "gd32e23x_dma.h"
 #include "gd32e23x_exti.h"
 #include "gd32e23x_fmc.h"
@@ -52,8 +50,6 @@ OF SUCH DAMAGE.
 #include "gd32e23x_spi.h"
 #include "gd32e23x_timer.h"
 #include "gd32e23x_usart.h"
-#include "gd32e23x_wwdgt.h"
 #include "gd32e23x_misc.h"
-#include "gd32e23x_cmp.h"
 
 #endif /* GD32E23X_LIBOPT_H */

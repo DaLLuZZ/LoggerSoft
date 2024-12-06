@@ -34,6 +34,7 @@ OF SUCH DAMAGE.
 
 /* user code [global 0] end */
 hal_adc_dev_struct adc_info;
+hal_i2c_dev_struct i2c1_info;
 hal_spi_dev_struct spi0_info;
 hal_spi_dev_struct spi1_info;
 hal_timer_dev_struct timer0_info;
@@ -119,12 +120,6 @@ void msd_gpio_init(void)
     gpio_init_parameter.pull = HAL_GPIO_PULL_UP;
     gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_2MHZ;
     gpio_init_parameter.af = HAL_GPIO_AF_0;
-    hal_gpio_init(GPIOF, GPIO_PIN_7, &gpio_init_parameter);
-
-    gpio_init_parameter.mode = HAL_GPIO_MODE_ANALOG;
-    gpio_init_parameter.pull = HAL_GPIO_PULL_UP;
-    gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_2MHZ;
-    gpio_init_parameter.af = HAL_GPIO_AF_0;
     hal_gpio_init(GPIOB, GPIO_PIN_3, &gpio_init_parameter);
 
     gpio_init_parameter.mode = HAL_GPIO_MODE_ANALOG;
@@ -132,12 +127,6 @@ void msd_gpio_init(void)
     gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_2MHZ;
     gpio_init_parameter.af = HAL_GPIO_AF_0;
     hal_gpio_init(GPIOB, GPIO_PIN_2, &gpio_init_parameter);
-
-    gpio_init_parameter.mode = HAL_GPIO_MODE_ANALOG;
-    gpio_init_parameter.pull = HAL_GPIO_PULL_UP;
-    gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_2MHZ;
-    gpio_init_parameter.af = HAL_GPIO_AF_0;
-    hal_gpio_init(GPIOF, GPIO_PIN_6, &gpio_init_parameter);
 
     gpio_init_parameter.mode = HAL_GPIO_MODE_ANALOG;
     gpio_init_parameter.pull = HAL_GPIO_PULL_UP;
@@ -263,9 +252,10 @@ void msd_gpio_init(void)
     gpio_init_parameter.af = HAL_GPIO_AF_0;
     hal_gpio_init(GPIOB, GPIO_PIN_11, &gpio_init_parameter);
 
-    gpio_init_parameter.mode = HAL_GPIO_MODE_ANALOG;
+    hal_gpio_bit_set(GPIOA, GPIO_PIN_12);
+    gpio_init_parameter.mode = HAL_GPIO_MODE_OUTPUT_PP;
     gpio_init_parameter.pull = HAL_GPIO_PULL_UP;
-    gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_2MHZ;
+    gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_50MHZ;
     gpio_init_parameter.af = HAL_GPIO_AF_0;
     hal_gpio_init(GPIOA, GPIO_PIN_12, &gpio_init_parameter);
 
@@ -299,10 +289,8 @@ void msd_gpio_deinit(void)
     hal_rcu_periph_clk_disable(RCU_GPIOF);
     hal_rcu_periph_clk_disable(RCU_GPIOB);
     hal_rcu_periph_clk_disable(RCU_GPIOA);
-    hal_gpio_deinit(GPIOF, GPIO_PIN_7);
     hal_gpio_deinit(GPIOB, GPIO_PIN_3);
     hal_gpio_deinit(GPIOB, GPIO_PIN_2);
-    hal_gpio_deinit(GPIOF, GPIO_PIN_6);
     hal_gpio_deinit(GPIOB, GPIO_PIN_5);
     hal_gpio_deinit(GPIOB, GPIO_PIN_4);
     hal_gpio_deinit(GPIOB, GPIO_PIN_7);
@@ -388,47 +376,55 @@ void msd_adc_deinit(void)
     /* user code [adc_deinit local 1] end */
 }
 
-void msd_crc_init(void)
+void msd_i2c1_init(void)
 {
-    /* user code [crc_init local 0] begin */
-    /* user code [crc_init local 0] end */
-    hal_crc_init_struct crc_init_parameter;
-
-    hal_rcu_periph_clk_enable(RCU_CRC);
-    hal_crc_struct_init(&crc_init_parameter);
-
-    crc_init_parameter.output_reverse = DISABLE;
-    crc_init_parameter.input_reverse = CRC_INPUT_REVERSE_NOT;
-    crc_init_parameter.polynomial_size = CRC_POLYNOMIAL_SIZE_32BIT;
-    crc_init_parameter.polynomial = 0x04C11DB7;
-    crc_init_parameter.initdata = 0xFFFFFFFF;
-    hal_crc_init(&crc_init_parameter);
-
-    /* user code [crc_init local 1] begin */
-    /* user code [crc_init local 1] end */
-}
-
-void msd_crc_deinit(void)
-{
-    /* user code [crc_deinit local 0] begin */
-    /* user code [crc_deinit local 0] end */
-    hal_rcu_periph_clk_disable(RCU_CRC);
-    hal_crc_deinit();
-    /* user code [crc_deinit local 1] begin */
-    /* user code [crc_deinit local 1] end */
-}
-
-void msd_dbg_init(void)
-{
-    /* user code [dbg_init local 0] begin */
-    /* user code [dbg_init local 0] end */
+    /* user code [i2c1_init local 0] begin */
+    /* user code [i2c1_init local 0] end */
     hal_gpio_init_struct gpio_init_parameter;
+    hal_i2c_init_struct i2c1_init_parameter;
 
-    hal_rcu_periph_clk_enable(RCU_PMU);
+    hal_rcu_periph_clk_enable(RCU_I2C1);
     hal_gpio_struct_init(&gpio_init_parameter);
 
-    /* user code [dbg_init local 1] begin */
-    /* user code [dbg_init local 1] end */
+    gpio_init_parameter.mode = HAL_GPIO_MODE_AF_OD;
+    gpio_init_parameter.pull = HAL_GPIO_PULL_UP;
+    gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_50MHZ;
+    gpio_init_parameter.af = HAL_GPIO_AF_0;
+    hal_gpio_init(GPIOF, GPIO_PIN_7, &gpio_init_parameter);
+
+    gpio_init_parameter.mode = HAL_GPIO_MODE_AF_OD;
+    gpio_init_parameter.pull = HAL_GPIO_PULL_UP;
+    gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_50MHZ;
+    gpio_init_parameter.af = HAL_GPIO_AF_0;
+    hal_gpio_init(GPIOF, GPIO_PIN_6, &gpio_init_parameter);
+
+    hal_i2c_struct_init(HAL_I2C_INIT_STRUCT, &i2c1_init_parameter);
+    hal_i2c_struct_init(HAL_I2C_DEV_STRUCT, &i2c1_info);
+
+    i2c1_init_parameter.duty_cycle = I2C_DTCY_2;
+    i2c1_init_parameter.clock_speed = 100000;
+    i2c1_init_parameter.address_format = I2C_ADDFORMAT_7BITS;
+    i2c1_init_parameter.own_address1 = 0x0;
+    i2c1_init_parameter.dual_address = I2C_DUADEN_DISABLE;
+    i2c1_init_parameter.own_address2 = 0x0;
+    i2c1_init_parameter.general_call = I2C_GCEN_DISABLE;
+    i2c1_init_parameter.no_stretch = I2C_SCLSTRETCH_DISABLE;
+    hal_i2c_init(&i2c1_info, I2C1, &i2c1_init_parameter);
+
+    /* user code [i2c1_init local 1] begin */
+    /* user code [i2c1_init local 1] end */
+}
+
+void msd_i2c1_deinit(void)
+{
+    /* user code [i2c1_deinit local 0] begin */
+    /* user code [i2c1_deinit local 0] end */
+    hal_rcu_periph_clk_disable(RCU_I2C1);
+    hal_gpio_deinit(GPIOF, GPIO_PIN_7);
+    hal_gpio_deinit(GPIOF, GPIO_PIN_6);
+    hal_i2c_deinit(&i2c1_info);
+    /* user code [i2c1_deinit local 1] begin */
+    /* user code [i2c1_deinit local 1] end */
 }
 
 void msd_rtc_init(void)

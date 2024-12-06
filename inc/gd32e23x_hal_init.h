@@ -36,6 +36,7 @@ OF SUCH DAMAGE.
 
 /* user code [global 0] end */
 extern hal_adc_dev_struct adc_info;
+extern hal_i2c_dev_struct i2c1_info;
 extern hal_spi_dev_struct spi0_info;
 extern hal_spi_dev_struct spi1_info;
 extern hal_timer_dev_struct timer0_info;
@@ -48,9 +49,8 @@ void msd_gpio_init(void);
 void msd_gpio_deinit(void);
 void msd_adc_init(void);
 void msd_adc_deinit(void);
-void msd_crc_init(void);
-void msd_crc_deinit(void);
-void msd_dbg_init(void);
+void msd_i2c1_init(void);
+void msd_i2c1_deinit(void);
 void msd_rtc_init(void);
 void msd_rtc_deinit(void);
 void msd_spi0_init(void);
