@@ -5,6 +5,10 @@
  * Hardware layer for SX1278 LoRa module
  */
 
+#include "main.h"
+
+#ifdef USE_RA_01_SENDER
+
 #include "SX1278_hw.h"
 #include <string.h>
 
@@ -58,3 +62,4 @@ int SX1278_hw_GetDIO0(SX1278_hw_t * hw) {
 	return (hal_gpio_output_bit_get(hw->dio0.port, hw->dio0.pin) == SET);
 }
 
+#endif // USE_RA_01_SENDER

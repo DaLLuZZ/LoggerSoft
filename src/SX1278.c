@@ -6,6 +6,10 @@
  * https://github.com/realspinner/SX1278_LoRa
  */
 
+#include "main.h"
+
+#ifdef USE_RA_01_SENDER
+
 #include "SX1278.h"
 #include <string.h>
 
@@ -315,3 +319,5 @@ uint8_t SX1278_RSSI(SX1278_t * module) {
 	temp = 127 - (temp >> 1);	//127:Max RSSI
 	return temp;
 }
+
+#endif // USE_RA_01_SENDER

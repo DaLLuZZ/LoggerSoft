@@ -15,9 +15,9 @@ BME280_Data_t bme_data;
 BMP280_HandleTypedef bmp280;
 #endif
 
+#ifdef USE_RA_01_SENDER
 SX1278_t SX1278;
 SX1278_hw_t SX1278_hw;
-
 struct txPack {
 	uint32_t device_id;
 	uint32_t msg_id;
@@ -26,6 +26,7 @@ struct txPack {
 	float pressure;
 	float voltage;
 };
+#endif // USE_RA_01_SENDER
 
 
 hal_uart_user_cb uart_trns_cmpd(hal_uart_dev_struct *uart)
@@ -195,7 +196,7 @@ int main(void)
 	}
 #endif // USE_W25Q_EXT_FLASH
 
-
+#ifdef USE_RA_01_SENDER
 	/*
 	 * INIT LORA MODULE RA-01
 	 */
@@ -230,13 +231,13 @@ int main(void)
 	pack.humidity = combineToFloat(bme_data.humidity_int, bme_data.humidity_fract);
 	pack.temperature = combineToFloat(bme_data.temp_int, bme_data.temp_fract);
 	pack.pressure = combineToFloat(bme_data.pressure_int, bme_data.pressure_fract);
-#endif
+#endif // USE_BME280_SPI
 
 #ifdef USE_BME280_I2C
 	pack.humidity = humidity;
 	pack.temperature = temperature;
 	pack.pressure = pressure;
-#endif
+#endif // USE_BME280_I2C
 
 	pack.voltage = (2 * freevalue) * 0.000814f; // 2 mul because of 1/1 R-div
 
@@ -245,6 +246,8 @@ int main(void)
 
 	pack.msg_id = pack.msg_id + 1;
 	hal_basetick_delay_ms(100);
+
+#endif // USE_RA_01_SENDER
 
     // Have a timeout
 
@@ -302,6 +305,7 @@ int main(void)
 		hal_i2c_stop(bmp280.i2c);
 #endif
 
+#ifdef USE_RA_01_SENDER
 		// Fill pack with values before sending
 #ifdef USE_BME280_SPI
 		pack.humidity = combineToFloat(bme_data.humidity_int, bme_data.humidity_fract);
@@ -323,6 +327,7 @@ int main(void)
 		SX1278_sleep(&SX1278);
 		hal_spi_stop(SX1278_hw.spi);
 		pack.msg_id += 1; // Increment msg_id for next message
+#endif // USE_RA_01_SENDER
 
 		// deinit all periph
 		msd_gpio_deinit();
