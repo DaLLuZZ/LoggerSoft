@@ -14,6 +14,9 @@
 
 
 #include "main.h"
+
+#ifdef USE_W25Q_EXT_FLASH
+
 #include "gd32e23x_hal_gpio.h"
 #include "z_flash_W25QXXX.h"
 
@@ -555,9 +558,4 @@ void DataReader_StartDMAReadData(uint32_t address24, uint8_t* buffer, uint32_t l
 	Flash_Read(address24, buffer, length);
 }
 
-
-
-
-
-
-
+#endif // USE_W25Q_EXT_FLASH

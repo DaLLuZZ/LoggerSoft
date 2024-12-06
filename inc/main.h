@@ -4,6 +4,10 @@
 #define LOGGER_ID 29
 //#define USE_BME280_SPI
 #define USE_BME280_I2C
+//#define USE_W25Q_EXT_FLASH
+
+#include <stdint.h>
+#include "SX1278.h"
 
 #ifdef USE_BME280_SPI
 #include "bme280.h"
@@ -12,15 +16,11 @@
 #include "bmp280.h"
 #endif
 
-#include <stdint.h>
-#include "z_flash_W25QXXX.h"
-#include "SX1278.h"
-
-#define FLASH_CS_GPIO_Port GPIOB
+#ifdef USE_W25Q_EXT_FLASH
+#define FLASH_CS_GPIO_Port GPIOA
 #define FLASH_CS_Pin GPIO_PIN_12
-
-#define BME280_CS_GPIO_Port GPIOA
-#define BME_CS_Pin GPIO_PIN_8
+#include "z_flash_W25QXXX.h"
+#endif
 
 #define SX_DIO0_GPIO_Port GPIOA
 #define SX_DIO0_Pin GPIO_PIN_10
@@ -32,11 +32,18 @@
 #define SX_RESET_Pin GPIO_PIN_9
 
 #ifdef USE_BME280_SPI
+#define BME280_CS_GPIO_Port GPIOA
+#define BME_CS_Pin GPIO_PIN_8
+
 extern BME280_t bme;
 extern BME280_Driver_t bme_drv;
 extern struct spi_bus_data bme_spi;
 extern BME280_Config_t bme_config;
 extern BME280_Data_t bme_data;
+#endif
+
+#ifdef USE_BME280_I2C
+extern BMP280_HandleTypedef bmp280;
 #endif
 
 extern SX1278_t SX1278;

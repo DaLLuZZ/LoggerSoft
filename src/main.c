@@ -182,6 +182,7 @@ int main(void)
 
 #endif // USE_BME280_I2C
 
+#ifdef USE_W25Q_EXT_FLASH
 	/*
 	 * INIT EXTERNAL FLASH
 	 */
@@ -192,6 +193,7 @@ int main(void)
 	    hal_uart_transmit_poll(&uart1_info, buffer, message_length, 1000);
 		//do something when error occurred
 	}
+#endif // USE_W25Q_EXT_FLASH
 
 
 	/*
