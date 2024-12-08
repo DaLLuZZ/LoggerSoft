@@ -1,13 +1,17 @@
 #ifndef MAIN_H_
 #define MAIN_H_
 
-#define LOGGER_ID 29
+// LOGGER_ID - value stored in 0x800FFFC (last 32bit of internal flash)
+// SLEEP_MINUTES - integer value in [1...60] including both bounds
+#define LOGGER_ID 3735928559
+#define SLEEP_MINUTES 15
 
 //#define USE_BME280_SPI
 #define USE_BME280_I2C
 //#define USE_W25Q_EXT_FLASH
 #define USE_RA_01_SENDER
 #define USE_MCU_DEEPSLEEP_MODE
+#define DEINIT_ALL_PERIPH_DURING_MCU_SLEEP
 
 #include <stdint.h>
 #include <stdio.h>

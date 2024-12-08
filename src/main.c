@@ -3,19 +3,26 @@
 
 #include "main.h"
 
+const uint32_t logger_id __attribute__((section(".logger_id"), used)) = LOGGER_ID;
+
 #ifdef USE_BME280_SPI
+
 BME280_t bme;
 BME280_Driver_t bme_drv;
 struct spi_bus_data bme_spi;
 BME280_Config_t bme_config;
 BME280_Data_t bme_data;
+
 #endif
 
 #ifdef USE_BME280_I2C
+
 BMP280_HandleTypedef bmp280;
+
 #endif
 
 #ifdef USE_RA_01_SENDER
+
 SX1278_t SX1278;
 SX1278_hw_t SX1278_hw;
 struct txPack {
@@ -26,6 +33,7 @@ struct txPack {
 	float pressure;
 	float voltage;
 };
+
 #endif // USE_RA_01_SENDER
 
 
@@ -72,13 +80,9 @@ int main(void)
     hal_uart_start(&uart1_info);
     hal_adc_start(&adc_info);
 
-
    /*
     * TRY ADC
     */
-
-    message_length = sprintf(buffer, "Trying ADC...\r\n");
-    hal_uart_transmit_poll(&uart1_info, buffer, message_length, 1000);
 
     hal_adc_regular_conversion_poll(&adc_info, 1000);
     adc_raw_value = hal_adc_regular_value_get(&adc_info);
@@ -88,8 +92,6 @@ int main(void)
     /*
      * INIT BME SPI
      */
-    message_length = sprintf(buffer, "Init BME...\r\n");
-    hal_uart_transmit_poll(&uart1_info, buffer, message_length, 1000);
 
     // set spi data
     bme_spi.spi_handle = &spi0_info;
@@ -106,8 +108,6 @@ int main(void)
 
     if (BME280_OK != res)
     {
-        message_length = sprintf(buffer, "Init BME failed...\r\n");
-        hal_uart_transmit_poll(&uart1_info, buffer, message_length, 1000);
         //do something when error occurred
     }
 
@@ -120,27 +120,17 @@ int main(void)
     bme_config.t_stby = BME280_STBY_500MS;
     bme_config.mode = BME280_NORMALMODE;
 
-    message_length = sprintf(buffer, "Configuring BME...\r\n");
-    hal_uart_transmit_poll(&uart1_info, buffer, message_length, 1000);
-
     /* set all sensor's options */
     BME280_ConfigureAll(&bme, &bme_config);
     if (BME280_OK != res)
     {
-        message_length = sprintf(buffer, "Configuring BME failed...\r\n");
-        hal_uart_transmit_poll(&uart1_info, buffer, message_length, 1000);
         // do something when error occurred
     }
-
-    message_length = sprintf(buffer, "Reading BME...\r\n");
-    hal_uart_transmit_poll(&uart1_info, buffer, message_length, 1000);
 
     // perform single read operation
 	res = BME280_ReadAllLast(&bme, &bme_data);
 	if (BME280_OK != res)
 	{
-        message_length = sprintf(buffer, "Reading BME failed...\r\n");
-        hal_uart_transmit_poll(&uart1_info, buffer, message_length, 1000);
 		//do something when error occurred
 	}
 
@@ -157,19 +147,20 @@ int main(void)
      * INIT BME I2C
      */
 	bmp280_init_default_params(&bmp280.params);
+	bmp280.params.oversampling_humidity = BMP280_ULTRA_HIGH_RES;
+	bmp280.params.oversampling_temperature = BMP280_ULTRA_HIGH_RES;
+	bmp280.params.oversampling_pressure = BMP280_ULTRA_LOW_POWER;
 	bmp280.addr = BMP280_I2C_ADDRESS_0;
 	bmp280.i2c = &i2c1_info;
 
 	if (!bmp280_init(&bmp280, &bmp280.params))
 	{
-		message_length = sprintf(buffer, "Configuring BME failed...\r\n");
-		hal_uart_transmit_poll(&uart1_info, buffer, message_length, 1000);
+		// do smth when error occurred
 	}
 
 	message_length =  sprintf(buffer, "found %s (%x)\r\n", bmp280.id == BME280_CHIP_ID ? "BME280" : "BMP280", bmp280.id);
-	hal_uart_transmit_poll(&uart1_info, buffer, message_length, 1000);
 
-	hal_basetick_delay_ms(500);
+	hal_basetick_delay_ms(300);
 
 	// perform single read operation
 	if (!bmp280_read_float(&bmp280, &temperature, &pressure, &humidity))
@@ -181,6 +172,7 @@ int main(void)
 #endif // USE_BME280_I2C
 
 #ifdef USE_W25Q_EXT_FLASH
+
 	/*
 	 * INIT EXTERNAL FLASH
 	 */
@@ -191,6 +183,7 @@ int main(void)
 	    hal_uart_transmit_poll(&uart1_info, buffer, message_length, 1000);
 		//do something when error occurred
 	}
+
 #endif // USE_W25Q_EXT_FLASH
 
 #ifdef USE_RA_01_SENDER
@@ -199,7 +192,7 @@ int main(void)
 	 */
 
 	struct txPack pack;
-	pack.device_id = LOGGER_ID;
+	pack.device_id = logger_id;
 	pack.msg_id = 1;
 	pack.humidity = 0.0f;
 	pack.temperature = 0.0f;
@@ -217,41 +210,34 @@ int main(void)
 	SX1278.hw = &SX1278_hw;
 
 	SX1278_init(&SX1278, 440000000, SX1278_POWER_20DBM, SX1278_LORA_SF_12,
-			SX1278_LORA_BW_125KHZ, SX1278_LORA_CR_4_8, SX1278_LORA_CRC_EN, 32);
-
-	// Try to send message
-	//message_length = sprintf(buffer, "bu! ispugalsya? ne boisya!");
-	//uint32_t ret1 = SX1278_LoRaEntryTx(&SX1278, message_length + 1, 2000);
-	//uint32_t ret2 = SX1278_LoRaTxPacket(&SX1278, (uint8_t*) buffer, message_length + 1, 20000);
+			SX1278_LORA_BW_125KHZ, SX1278_LORA_CR_4_8, SX1278_LORA_CRC_EN, 24);
 
 #ifdef USE_BME280_SPI
+
 	pack.humidity = combineToFloat(bme_data.humidity_int, bme_data.humidity_fract);
 	pack.temperature = combineToFloat(bme_data.temp_int, bme_data.temp_fract);
 	pack.pressure = combineToFloat(bme_data.pressure_int, bme_data.pressure_fract);
+
 #endif // USE_BME280_SPI
 
 #ifdef USE_BME280_I2C
+
 	pack.humidity = humidity;
 	pack.temperature = temperature;
 	pack.pressure = pressure;
+
 #endif // USE_BME280_I2C
 
 	pack.voltage = (2 * adc_raw_value) * 0.000814f; // 2 mul because of 1/1 R-div
 
-	uint32_t ret1 = SX1278_LoRaEntryTx(&SX1278, sizeof(pack), 1000);
-	uint32_t ret2 = SX1278_LoRaTxPacket(&SX1278, (uint8_t*)(&pack), sizeof(pack), 6000);
+	uint32_t ret1 = SX1278_LoRaEntryTx(&SX1278, sizeof(pack), 5);
+	uint32_t ret2 = SX1278_LoRaTxPacket(&SX1278, (uint8_t*)(&pack), sizeof(pack), 2000);
 
 	pack.msg_id = pack.msg_id + 1;
-	hal_basetick_delay_ms(100);
 
 #endif // USE_RA_01_SENDER
 
-    // Have a timeout
-
-    message_length = sprintf(buffer, "Delay 10 sec, then sleep mode of ra-01\r\n");
-    hal_uart_transmit_poll(&uart1_info, buffer, message_length, 1000);
-
-    hal_basetick_delay_ms(10000);
+    hal_basetick_delay_ms(5000);
 
 #ifdef USE_MCU_DEEPSLEEP_MODE
 
@@ -269,7 +255,9 @@ int main(void)
     while (1)
     {
 
-		// init all periph
+#ifdef DEINIT_ALL_PERIPH_DURING_MCU_SLEEP
+
+		// reinit all periph
 		msd_gpio_init();
 		msd_adc_init();
 		msd_spi0_init();
@@ -279,6 +267,8 @@ int main(void)
 		msd_usart1_init();
 		msd_i2c1_init();
 
+#endif // DEINIT_ALL_PERIPH_DURING_MCU_SLEEP
+
 		// Wake up ADC, get value and sleep
 		hal_adc_start(&adc_info);
 		hal_adc_regular_conversion_poll(&adc_info, 1000);
@@ -286,6 +276,7 @@ int main(void)
 		hal_adc_stop(&adc_info);
 
 #ifdef USE_BME280_SPI
+
 		// Wake up BME's SPI, wake up bme, read values, sleep bme, stop BME's SPI
 		hal_spi_start(bme_spi.spi_handle);
 		bme_config.mode = BME280_NORMALMODE;
@@ -294,17 +285,22 @@ int main(void)
 		bme_config.mode = BME280_SLEEPMODE;
 		BME280_ConfigureAll(&bme, &bme_config);
 		hal_spi_stop(bme_spi.spi_handle);
+
 #endif
+
 #ifdef USE_BME280_I2C
+
 		// Wake up BME's I2C, wake up bme, read values, sleep bme, stop BME's I2C
 		hal_i2c_start(bmp280.i2c);
 		bmp280_wakeup(&bmp280);
 		bmp280_read_float(&bmp280, &temperature, &pressure, &humidity);
 		bmp280_sleep(&bmp280);
 		hal_i2c_stop(bmp280.i2c);
+
 #endif
 
 #ifdef USE_RA_01_SENDER
+
 		// Fill pack with values before sending
 #ifdef USE_BME280_SPI
 		pack.humidity = combineToFloat(bme_data.humidity_int, bme_data.humidity_fract);
@@ -321,12 +317,15 @@ int main(void)
 		// START Ra-01 SPI, wake up Ra-01, send packet, sleep Ra-01, stop Ra-01 SPI
 		hal_spi_start(SX1278_hw.spi);
 		SX1278_standby(&SX1278);
-		SX1278_LoRaEntryTx(&SX1278, sizeof(pack), 1000);
-		SX1278_LoRaTxPacket(&SX1278, (uint8_t*)(&pack), sizeof(pack), 10000);
+		SX1278_LoRaEntryTx(&SX1278, sizeof(pack), 5);
+		SX1278_LoRaTxPacket(&SX1278, (uint8_t*)(&pack), sizeof(pack), 2000);
 		SX1278_sleep(&SX1278);
 		hal_spi_stop(SX1278_hw.spi);
 		pack.msg_id += 1; // Increment msg_id for next message
+
 #endif // USE_RA_01_SENDER
+
+#ifdef DEINIT_ALL_PERIPH_DURING_MCU_SLEEP
 
 		// deinit all periph
 		msd_gpio_deinit();
@@ -338,16 +337,26 @@ int main(void)
 		msd_usart1_deinit();
 		msd_i2c1_deinit();
 
+#endif // DEINIT_ALL_PERIPH_DURING_MCU_SLEEP
+
 #ifdef USE_MCU_DEEPSLEEP_MODE
 
 		rtc_parameter_struct rtc_initpara_struct;
+		uint8_t temp;
 		// rtc alarm config and sleep until alarm, then wake up and disable alarm
 		// IMPORTANT NOTE: state of alarm register must change between 2 alarms
 		hal_rtc_alarm_disable();
 		hal_nvic_periph_irq_disable(RTC_IRQn);
 		rtc_interrupt_disable(RTC_INT_ALARM);
-		rtc_alarm_time.rtc_alarm_mask = HAL_RTC_ALARM_DATE_MASK | HAL_RTC_ALARM_HOUR_MASK | HAL_RTC_ALARM_MINUTE_MASK;
-		rtc_alarm_time.rtc_alarm_second = 0x50;
+		rtc_alarm_time.rtc_alarm_mask = HAL_RTC_ALARM_DATE_MASK | HAL_RTC_ALARM_HOUR_MASK;
+		rtc_current_time_get(&rtc_initpara_struct);
+		temp = rtc_bcd_2_normal(rtc_initpara_struct.rtc_minute) + SLEEP_MINUTES;
+		if (temp >= 60)
+		{
+			temp -= 60;
+		}
+		rtc_alarm_time.rtc_alarm_minute = rtc_normal_2_bcd(temp);
+		rtc_alarm_time.rtc_alarm_second = 0x00;
 		hal_rtc_alarm_config(&rtc_alarm_time);
 		rtc_alarm_subsecond_config(RTC_MASKSSC_0_14, 0);
 		rtc_flag_clear(RTC_FLAG_ALARM0);
@@ -364,13 +373,20 @@ int main(void)
 		hal_nvic_periph_irq_disable(RTC_IRQn);
 		rtc_interrupt_disable(RTC_INT_ALARM);
 		rtc_flag_clear(RTC_FLAG_ALARM0);
-		rtc_current_time_get(&rtc_initpara_struct);
 
 #endif // USE_MCU_DEEPSLEEP_MODE
 
-		hal_basetick_delay_ms(1500);
+#ifndef USE_MCU_DEEPSLEEP_MODE
+
+		hal_basetick_delay_ms(SLEEP_MINUTES * 1000 * 60);
+
+#endif
 
     }
+
+    // transmit message uart
+    message_length = sprintf(buffer, "Hello there!\r\n");
+    hal_uart_transmit_poll(&uart1_info, buffer, message_length, 1000);
 
     // try to receive uart
     hal_uart_receive_interrupt(&uart1_info, buffer, 1, uart_recv_byte);

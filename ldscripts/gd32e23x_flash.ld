@@ -34,7 +34,7 @@ SECTIONS
     KEEP (*(.fini))
 
     . = ALIGN(4);
-    /* the symbol ¡®_etext¡¯ will be defined at the end of code section */
+    
     _etext = .;
   } >FLASH
 
@@ -81,32 +81,28 @@ SECTIONS
     KEEP (*(SORT(.fini_array.*)))
     PROVIDE_HIDDEN (__fini_array_end = .);
   } >FLASH
-
+  
   /* provide some necessary symbols for startup file to initialize data */
   _sidata = LOADADDR(.data);
   .data :
   {
     . = ALIGN(4);
-    /* the symbol ¡®_sdata¡¯ will be defined at the data section end start */
     _sdata = .;
     *(.data)
     *(.data*)
     . = ALIGN(4);
-    /* the symbol ¡®_edata¡¯ will be defined at the data section end */
     _edata = .;
   } >RAM AT> FLASH
 
   . = ALIGN(4);
   .bss :
   {
-    /* the symbol ¡®_sbss¡¯ will be defined at the bss section start */
     _sbss = .;
     __bss_start__ = _sbss;
     *(.bss)
     *(.bss*)
     *(COMMON)
     . = ALIGN(4);
-    /* the symbol ¡®_ebss¡¯ will be defined at the bss section end */
     _ebss = .;
     __bss_end__ = _ebss;
   } >RAM
@@ -121,6 +117,12 @@ SECTIONS
     . = __stack_size;
     PROVIDE( _sp = . );
   } >RAM AT>RAM
+  
+  .logger_id 0x0800FFFC :
+  {
+  	KEEP(*(.logger_id))
+  } >FLASH
+  
 }
 
  /* input sections */
