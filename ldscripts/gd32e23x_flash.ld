@@ -118,9 +118,14 @@ SECTIONS
     PROVIDE( _sp = . );
   } >RAM AT>RAM
   
-  .logger_id 0x0800FFFC :
+  .logger_id 0x0800FFF8 :
   {
   	KEEP(*(.logger_id))
+  } >FLASH
+  
+  .magic_signature 0x0800FFFC :
+  {
+  	KEEP(*(.magic_signature))
   } >FLASH
   
 }

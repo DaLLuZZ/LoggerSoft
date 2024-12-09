@@ -4,6 +4,7 @@
 #include "main.h"
 
 const uint32_t logger_id __attribute__((section(".logger_id"), used)) = LOGGER_ID;
+const uint32_t magic_signature __attribute__((section(".magic_signature"), used)) = MAGIC_SIGNATURE;
 
 #ifdef USE_BME280_SPI
 
@@ -380,7 +381,7 @@ int main(void)
 
 		hal_basetick_delay_ms(SLEEP_MINUTES * 1000 * 60);
 
-#endif
+#endif // USE_MCU_DEEPSLEEP_MODE
 
     }
 

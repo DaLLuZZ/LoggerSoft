@@ -1,9 +1,13 @@
 #ifndef MAIN_H_
 #define MAIN_H_
 
-// LOGGER_ID - value stored in 0x800FFFC (last 32bit of internal flash)
-// SLEEP_MINUTES - integer value in [1...60] including both bounds
-#define LOGGER_ID 3735928559
+/*
+ * MAGIC_SIGNATURE - used for validation in auto firmware flasher
+ * LOGGER_ID - value stored in 0x800FFFC (last 32bit of internal flash)
+ * SLEEP_MINUTES - integer value in [1...60] including both bounds
+ */
+#define MAGIC_SIGNATURE 0xDEADBEEF
+#define LOGGER_ID 0xFFFFFFFF
 #define SLEEP_MINUTES 15
 
 //#define USE_BME280_SPI
