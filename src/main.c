@@ -193,7 +193,7 @@ int main(void)
 	 */
 
 	struct txPack pack;
-	pack.device_id = logger_id;
+	pack.device_id = *((uint32_t*)0x0800FFF8);
 	pack.msg_id = 1;
 	pack.humidity = 0.0f;
 	pack.temperature = 0.0f;
