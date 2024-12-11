@@ -240,6 +240,18 @@ int main(void)
 
     hal_basetick_delay_ms(5000);
 
+#ifdef USE_TEST_PACKET_SPAMMING
+
+    for (int i = 0; i < 36; i++)
+    {
+		uint32_t ret1 = SX1278_LoRaEntryTx(&SX1278, sizeof(pack), 5);
+		uint32_t ret2 = SX1278_LoRaTxPacket(&SX1278, (uint8_t*)(&pack), sizeof(pack), 2000);
+		pack.msg_id = pack.msg_id + 1;
+		hal_basetick_delay_ms(3000);
+    }
+
+#endif // USE_TEST_PACKET_SPAMMING
+
 #ifdef USE_MCU_DEEPSLEEP_MODE
 
     // INIT ALARM FOR RTC

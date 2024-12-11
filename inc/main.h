@@ -16,6 +16,7 @@
 #define USE_RA_01_SENDER
 #define USE_MCU_DEEPSLEEP_MODE
 #define DEINIT_ALL_PERIPH_DURING_MCU_SLEEP
+#define USE_TEST_PACKET_SPAMMING
 
 #include <stdint.h>
 #include <stdio.h>
