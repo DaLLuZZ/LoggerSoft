@@ -31,7 +31,7 @@ OF SUCH DAMAGE.
 */
 #include "gd32e23x_hal_init.h"
 /* user code [global 0] begin */
-
+#include "main.h"
 /* user code [global 0] end */
 hal_adc_dev_struct adc_info;
 hal_i2c_dev_struct i2c1_info;
@@ -73,8 +73,15 @@ void msd_clock_init(void)
     rcu_osci_parameter.irc8m.need_configure = ENABLE;
     rcu_osci_parameter.irc8m.state = RCU_OSC_ON;
     rcu_osci_parameter.irc8m.adjust_value = 0;
+
+#ifdef USE_EXTERNAL_LXTAL
+    rcu_osci_parameter.lxtal.need_configure = ENABLE;
+    rcu_osci_parameter.lxtal.state = RCU_OSC_ON;
+#else
     rcu_osci_parameter.irc40k.need_configure = ENABLE;
     rcu_osci_parameter.irc40k.state = RCU_OSC_ON;
+#endif // USE_EXTERNAL_LXTAL
+
     if(HAL_ERR_NONE != hal_rcu_osci_config(&rcu_osci_parameter)){
         while(1);
     }
@@ -84,12 +91,18 @@ void msd_clock_init(void)
     rcu_clk_parameter.ahbclk_divider = RCU_SYSCLK_AHBDIV1;
     rcu_clk_parameter.apb1clk_divider = RCU_AHBCLK_APB1DIV1;
     rcu_clk_parameter.apb2clk_divider = RCU_AHBCLK_APB2DIV1;
-    if(HAL_ERR_NONE != hal_rcu_clock_config(&rcu_clk_parameter, WS_WSCNT_2)){
+    if(HAL_ERR_NONE != hal_rcu_clock_config(&rcu_clk_parameter, WS_WSCNT_0)){
         while(1);
     }
 
     rcu_periphclk_parameter.periph_clock_type = RCU_PERIPH_CLKTYPE_RTC;
+
+#ifdef USE_EXTERNAL_LXTAL
+    rcu_periphclk_parameter.rtc_clock_source = RCU_RTC_CLKSRC_LXTAL;
+#else
     rcu_periphclk_parameter.rtc_clock_source = RCU_RTC_CLKSRC_IRC40K;
+#endif // USE_EXTERNAL_LXTAL
+
     if(HAL_ERR_NONE != hal_rcu_periph_clock_config(&rcu_periphclk_parameter)){
         while(1);
     }

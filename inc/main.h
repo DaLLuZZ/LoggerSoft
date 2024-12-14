@@ -10,6 +10,8 @@
 #define LOGGER_ID 0xFFFFFFFF
 #define SLEEP_MINUTES 15
 
+#define USE_EXTERNAL_LXTAL
+
 //#define USE_BME280_SPI
 #define USE_BME280_I2C
 //#define USE_W25Q_EXT_FLASH
