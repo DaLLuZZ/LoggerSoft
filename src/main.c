@@ -210,7 +210,7 @@ int main(void)
 	SX1278_hw.spi = &spi1_info;
 	SX1278.hw = &SX1278_hw;
 
-	SX1278_init(&SX1278, 440000000, SX1278_POWER_20DBM, SX1278_LORA_SF_12,
+	SX1278_init(&SX1278, 433000000, SX1278_POWER_20DBM, SX1278_LORA_SF_12,
 			SX1278_LORA_BW_125KHZ, SX1278_LORA_CR_4_8, SX1278_LORA_CRC_EN, 24);
 
 #ifdef USE_BME280_SPI
@@ -231,8 +231,8 @@ int main(void)
 
 	pack.voltage = (2 * adc_raw_value) * 0.000814f; // 2 mul because of 1/1 R-div
 
-	uint32_t ret1 = SX1278_LoRaEntryTx(&SX1278, sizeof(pack), 5);
-	uint32_t ret2 = SX1278_LoRaTxPacket(&SX1278, (uint8_t*)(&pack), sizeof(pack), 2000);
+	uint32_t ret1 = SX1278_LoRaEntryTx(&SX1278, sizeof(pack), 50);
+	uint32_t ret2 = SX1278_LoRaTxPacket(&SX1278, (uint8_t*)(&pack), sizeof(pack), 2500);
 
 	pack.msg_id = pack.msg_id + 1;
 
@@ -244,10 +244,10 @@ int main(void)
 
     for (int i = 0; i < 36; i++)
     {
-		uint32_t ret1 = SX1278_LoRaEntryTx(&SX1278, sizeof(pack), 5);
-		uint32_t ret2 = SX1278_LoRaTxPacket(&SX1278, (uint8_t*)(&pack), sizeof(pack), 2000);
+		uint32_t ret1 = SX1278_LoRaEntryTx(&SX1278, sizeof(pack), 50);
+		uint32_t ret2 = SX1278_LoRaTxPacket(&SX1278, (uint8_t*)(&pack), sizeof(pack), 2500);
 		pack.msg_id = pack.msg_id + 1;
-		hal_basetick_delay_ms(3000);
+		hal_basetick_delay_ms(12500);
     }
 
 #endif // USE_TEST_PACKET_SPAMMING
@@ -330,8 +330,8 @@ int main(void)
 		// START Ra-01 SPI, wake up Ra-01, send packet, sleep Ra-01, stop Ra-01 SPI
 		hal_spi_start(SX1278_hw.spi);
 		SX1278_standby(&SX1278);
-		SX1278_LoRaEntryTx(&SX1278, sizeof(pack), 5);
-		SX1278_LoRaTxPacket(&SX1278, (uint8_t*)(&pack), sizeof(pack), 2000);
+		SX1278_LoRaEntryTx(&SX1278, sizeof(pack), 50);
+		SX1278_LoRaTxPacket(&SX1278, (uint8_t*)(&pack), sizeof(pack), 2500);
 		SX1278_sleep(&SX1278);
 		hal_spi_stop(SX1278_hw.spi);
 		pack.msg_id += 1; // Increment msg_id for next message

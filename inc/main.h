@@ -2,15 +2,16 @@
 #define MAIN_H_
 
 /*
- * MAGIC_SIGNATURE - used for validation in auto firmware flasher
- * LOGGER_ID - value stored in 0x800FFFC (last 32bit of internal flash)
+ * MAGIC_SIGNATURE - used for validation in auto firmware flasher (stored in 0x800FFFC, last 32bit of internal flash)
+ * LOGGER_ID - value stored in 0x800FFF8
  * SLEEP_MINUTES - integer value in [1...60] including both bounds
  */
 #define MAGIC_SIGNATURE 0xDEADBEEF
 #define LOGGER_ID 0xFFFFFFFF
 #define SLEEP_MINUTES 15
+#define PACKET_DUPLICATION_COUNT 1
 
-#define USE_EXTERNAL_LXTAL
+//#define USE_EXTERNAL_LXTAL
 
 //#define USE_BME280_SPI
 #define USE_BME280_I2C
