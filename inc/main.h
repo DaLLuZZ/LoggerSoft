@@ -47,8 +47,8 @@
 #define SX_DIO0_GPIO_Port GPIOA
 #define SX_DIO0_Pin GPIO_PIN_10
 
-#define SX_NSS_GPIO_Port GPIOA
-#define SX_NSS_Pin GPIO_PIN_4
+#define SX_NSS_GPIO_Port GPIOB
+#define SX_NSS_Pin GPIO_PIN_12
 
 #define SX_RESET_GPIO_Port GPIOA
 #define SX_RESET_Pin GPIO_PIN_9

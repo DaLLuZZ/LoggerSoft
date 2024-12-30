@@ -190,9 +190,9 @@ void msd_gpio_init(void)
     hal_gpio_init(GPIOA, GPIO_PIN_1, &gpio_init_parameter);
 
     hal_gpio_bit_set(GPIOA, GPIO_PIN_4);
-    gpio_init_parameter.mode = HAL_GPIO_MODE_OUTPUT_PP;
+    gpio_init_parameter.mode = HAL_GPIO_MODE_ANALOG;
     gpio_init_parameter.pull = HAL_GPIO_PULL_UP;
-    gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_50MHZ;
+    gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_2MHZ;
     gpio_init_parameter.af = HAL_GPIO_AF_0;
     hal_gpio_init(GPIOA, GPIO_PIN_4, &gpio_init_parameter);
 
