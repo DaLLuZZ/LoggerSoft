@@ -8,7 +8,8 @@ const uint32_t magic_signature __attribute__((section(".magic_signature"), used)
 
 #ifdef USE_W25Q_EXT_FLASH
 
-int32_t flash_write_address = -1;
+uint32_t flash_write_address = 0xFFFFFFFF;
+uint8_t flash_failed = 0;
 
 #endif
 
@@ -198,9 +199,6 @@ int main(void)
 	}
 	*/
 
-	uint8_t huge_buffer[256];
-	Flash_Read(764, huge_buffer, 256);
-
 	struct txPack mem_pack;
 	for (uint32_t i = 0; i < 4 * 1024 * 1024; i += sizeof(mem_pack))
 	{
@@ -218,9 +216,13 @@ int main(void)
 			}
 		}
 
-		if (flash_write_address >= 0)
+		if (flash_write_address != 0xFFFFFFFF)
 		{
 			break;
+		}
+		else if (i >= 4 * 1024 * 1024 - sizeof(mem_pack))
+		{
+			flash_failed = 1;
 		}
 	}
 
@@ -287,6 +289,11 @@ int main(void)
     hal_basetick_delay_ms(5000);
 
 #ifdef USE_TEST_PACKET_SPAMMING
+
+    if (flash_failed)
+    {
+    	pack.voltage = -3.3f;
+    }
 
     for (int i = 0; i < 36; i++)
     {
