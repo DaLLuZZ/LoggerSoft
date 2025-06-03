@@ -25,8 +25,8 @@
  ** properly set the below th 2 defines to address
  ********  the SPI port defined on CubeMX *********
  **************************************************/
-#define FLASH_SPI_PORT 	spi1_info
-#define FLASH_SPI 		SPI1
+#define FLASH_SPI_PORT 	spi0_info
+#define FLASH_SPI 		SPI0
 
 
 /******************    STEP 2    *******************
@@ -203,6 +203,7 @@ void 	 Flash_BErase32k(uint32_t addr);
 void 	 Flash_BErase64k(uint32_t addr);
 void 	 Flash_ChipErase();
 void 	 Flash_PowerDown();
+void 	 Flash_PowerUp();
 uint8_t  Flash_ReadDevID();
 uint16_t Flash_ReadManufactutrerAndDevID();
 uint32_t Flash_ReadJedecID();

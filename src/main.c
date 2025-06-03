@@ -6,6 +6,12 @@
 const uint32_t logger_id __attribute__((section(".logger_id"), used)) = LOGGER_ID;
 const uint32_t magic_signature __attribute__((section(".magic_signature"), used)) = MAGIC_SIGNATURE;
 
+#ifdef USE_W25Q_EXT_FLASH
+
+int32_t flash_write_address = -1;
+
+#endif
+
 #ifdef USE_BME280_SPI
 
 BME280_t bme;
@@ -178,11 +184,44 @@ int main(void)
 	 * INIT EXTERNAL FLASH
 	 */
 
-	if (Flash_TestAvailability() == 0)
+	Flash_TestAvailability();
+	Flash_Reset();
+	Flash_Init();
+
+	/*
+	// Temp commented out due to wrong 1st byte reading
+	if (Flash_Init() == 0)
 	{
 	    message_length = sprintf(buffer, "Something wrong with W25Q...\r\n");
 	    hal_uart_transmit_poll(&uart1_info, buffer, message_length, 1000);
 		//do something when error occurred
+	}
+	*/
+
+	uint8_t huge_buffer[256];
+	Flash_Read(764, huge_buffer, 256);
+
+	struct txPack mem_pack;
+	for (uint32_t i = 0; i < 4 * 1024 * 1024; i += sizeof(mem_pack))
+	{
+		Flash_Read(i, (uint8_t*)&mem_pack.device_id, sizeof(mem_pack));
+		for (uint8_t j = 4; j < sizeof(mem_pack); j++)
+		{
+			if (((uint8_t*)(&mem_pack.device_id))[j] != 0xFF)
+			{
+				break;
+			}
+
+			if (j == sizeof(mem_pack) - 1)
+			{
+				flash_write_address = i;
+			}
+		}
+
+		if (flash_write_address >= 0)
+		{
+			break;
+		}
 	}
 
 #endif // USE_W25Q_EXT_FLASH
@@ -234,6 +273,13 @@ int main(void)
 	uint32_t ret1 = SX1278_LoRaEntryTx(&SX1278, sizeof(pack), 50);
 	uint32_t ret2 = SX1278_LoRaTxPacket(&SX1278, (uint8_t*)(&pack), sizeof(pack), 2500);
 
+#ifdef USE_W25Q_EXT_FLASH
+
+	Flash_Write(flash_write_address, (uint8_t*)&pack.device_id, sizeof(pack));
+	flash_write_address += sizeof(pack);
+
+#endif // USE_W25Q_EXT_FLASH
+
 	pack.msg_id = pack.msg_id + 1;
 
 #endif // USE_RA_01_SENDER
@@ -246,6 +292,14 @@ int main(void)
     {
 		uint32_t ret1 = SX1278_LoRaEntryTx(&SX1278, sizeof(pack), 50);
 		uint32_t ret2 = SX1278_LoRaTxPacket(&SX1278, (uint8_t*)(&pack), sizeof(pack), 2500);
+
+#ifdef USE_W25Q_EXT_FLASH
+
+		Flash_Write(flash_write_address, (uint8_t*)&pack.device_id, sizeof(pack));
+		flash_write_address += sizeof(pack);
+
+#endif // USE_W25Q_EXT_FLASH
+
 		pack.msg_id = pack.msg_id + 1;
 		hal_basetick_delay_ms(12500);
     }
@@ -319,12 +373,12 @@ int main(void)
 		pack.humidity = combineToFloat(bme_data.humidity_int, bme_data.humidity_fract);
 		pack.temperature = combineToFloat(bme_data.temp_int, bme_data.temp_fract);
 		pack.pressure = combineToFloat(bme_data.pressure_int, bme_data.pressure_fract);
-#endif
+#endif // USE_BME280_SPI
 #ifdef USE_BME280_I2C
 		pack.humidity = humidity;
 		pack.temperature = temperature;
 		pack.pressure = pressure;
-#endif
+#endif // USE_BME280_I2C
 		pack.voltage = (2 * adc_raw_value) * 0.000814f; // 2 mul because of 1/1 R-div
 
 		// START Ra-01 SPI, wake up Ra-01, send packet, sleep Ra-01, stop Ra-01 SPI
@@ -334,6 +388,19 @@ int main(void)
 		SX1278_LoRaTxPacket(&SX1278, (uint8_t*)(&pack), sizeof(pack), 2500);
 		SX1278_sleep(&SX1278);
 		hal_spi_stop(SX1278_hw.spi);
+
+#ifdef USE_W25Q_EXT_FLASH
+
+		// START SPI, power up flash ic, save packet data to flash, power down flash ic, stop SPI
+		hal_spi_start(&FLASH_SPI);
+		Flash_PowerUp();
+		Flash_Write(flash_write_address, (uint8_t*)&pack.device_id, sizeof(pack));
+		flash_write_address += sizeof(pack);
+		Flash_PowerDown();
+		hal_spi_stop(&FLASH_SPI);
+
+#endif // USE_W25Q_EXT_FLASH
+
 		pack.msg_id += 1; // Increment msg_id for next message
 
 #endif // USE_RA_01_SENDER

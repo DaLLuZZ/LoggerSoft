@@ -60,7 +60,7 @@ void Flash_UnSelect(void) {
 
 
 void Flash_Receive(uint8_t* data, uint16_t dataSize){
-	hal_spi_receive_poll(&FLASH_SPI_PORT , data, dataSize, HAL_MAX_DELAY);
+	hal_spi_receive_poll(&FLASH_SPI_PORT, data, dataSize, HAL_MAX_DELAY);
 }
 
 
@@ -79,7 +79,7 @@ void Flash_Polling_Transmit(uint8_t* data, uint16_t dataSize){
 
 
 /**************************
- * @BRIEF	engages SPI port tranferring data to Flash
+ * @BRIEF	engages SPI port transferring data to Flash
  * 			Macro parameter DISPL_DMA_CUTOFF defines if transmission is Poling or DMA
  * 			you need to set this macro even using TouchGFX (having its own configuration parameter:
  * 			set DISPL_DMA_CUTOFF and CubeMX parameter to the same value)
@@ -90,10 +90,10 @@ void Flash_Transmit(uint8_t* data, uint16_t dataSize){
 #ifndef	EXT_FLASH_SPI_POLLING_MODE
 	if (dataSize<EXT_FLASH_DMA_CUTOFF) {
 #endif //FLASH_SPI_POLLING_MODE
-		hal_spi_transmit_poll(&FLASH_SPI_PORT , data, dataSize, HAL_MAX_DELAY);
+		hal_spi_transmit_poll(&FLASH_SPI_PORT, data, dataSize, HAL_MAX_DELAY);
 #ifndef	EXT_FLASH_SPI_POLLING_MODE
 	} else {
-		HAL_SPI_Transmit_DMA(&EXT_FLASH_SPI_PORT , data, dataSize);
+		HAL_SPI_Transmit_DMA(&EXT_FLASH_SPI_PORT, data, dataSize);
 	}
 #endif  //FLASH_SPI_POLLING_MODE
 }
@@ -132,25 +132,18 @@ uint8_t buffer[1];
  *  		data		buffer to fill with read data
  * 			dataSize	number of bytes to read
  **************************/
-void Flash_Read(uint32_t addr, uint8_t* data, uint32_t dataSize){
-uint16_t data_to_transfer;
-uint8_t buffer[5];
-
+void Flash_Read(uint32_t addr, uint8_t* data, uint32_t dataSize)
+{
+	uint8_t buffer[5];
 	buffer[0] = FLASH_READ_COMMAND;
 	buffer[1] = (addr >> 16) & 0xFF;
 	buffer[2] = (addr >> 8) & 0xFF;
 	buffer[3] = addr & 0xFF;
 	buffer[4] = W25_DUMMY;
+
 	Flash_Select();
 	Flash_Transmit(buffer, (FLASH_READ_COMMAND == W25_READ ? 4 : 5));  // "normal/slow" read command doesn't need sending dummy byte
-
-	// dataSize is 32 bit, spi_receive handles 16bit transfers, so I have to loop...
-	while (dataSize) {
-		data_to_transfer = ((dataSize>0xFFFF) ? 0xFFFF : (uint16_t)dataSize);
-		Flash_Receive(data, data_to_transfer);
-		data+=data_to_transfer;
-		dataSize-=data_to_transfer;
-	}
+	Flash_Receive(data, dataSize);
 	Flash_UnSelect();
 }
 
@@ -514,7 +507,7 @@ uint32_t JedecID;
 	Flash_Reset();
 	if (!Flash_TestAvailability())
 		return 0;
-	JedecID=Flash_ReadJedecID() ;	//select the memSize byte
+	JedecID=Flash_ReadJedecID();	//select the memSize byte
 	if (((JedecID >> 16) & 0XFF) != 0xEF)  // if ManufacturerID is not Winbond (0xEF)
 		return 0;
 	return 1;  //return memSize as per table in Flash_ReadJedecID() definition

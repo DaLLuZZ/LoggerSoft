@@ -161,7 +161,7 @@ void msd_gpio_init(void)
 
     gpio_init_parameter.mode = HAL_GPIO_MODE_ANALOG;
     gpio_init_parameter.pull = HAL_GPIO_PULL_UP;
-    gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_2MHZ;
+    gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_50MHZ;
     gpio_init_parameter.af = HAL_GPIO_AF_0;
     hal_gpio_init(GPIOB, GPIO_PIN_6, &gpio_init_parameter);
 
@@ -190,9 +190,9 @@ void msd_gpio_init(void)
     hal_gpio_init(GPIOA, GPIO_PIN_1, &gpio_init_parameter);
 
     hal_gpio_bit_set(GPIOA, GPIO_PIN_4);
-    gpio_init_parameter.mode = HAL_GPIO_MODE_ANALOG;
+    gpio_init_parameter.mode = HAL_GPIO_MODE_OUTPUT_PP;
     gpio_init_parameter.pull = HAL_GPIO_PULL_UP;
-    gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_2MHZ;
+    gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_50MHZ;
     gpio_init_parameter.af = HAL_GPIO_AF_0;
     hal_gpio_init(GPIOA, GPIO_PIN_4, &gpio_init_parameter);
 
@@ -481,7 +481,7 @@ void msd_spi0_init(void)
     hal_gpio_struct_init(&gpio_init_parameter);
 
     gpio_init_parameter.mode = HAL_GPIO_MODE_AF_PP;
-    gpio_init_parameter.pull = HAL_GPIO_PULL_UP;
+    gpio_init_parameter.pull = HAL_GPIO_PULL_DOWN;
     gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_50MHZ;
     gpio_init_parameter.af = HAL_GPIO_AF_0;
     hal_gpio_init(GPIOA, GPIO_PIN_6, &gpio_init_parameter);
@@ -493,7 +493,7 @@ void msd_spi0_init(void)
     hal_gpio_init(GPIOA, GPIO_PIN_5, &gpio_init_parameter);
 
     gpio_init_parameter.mode = HAL_GPIO_MODE_AF_PP;
-    gpio_init_parameter.pull = HAL_GPIO_PULL_UP;
+    gpio_init_parameter.pull = HAL_GPIO_PULL_DOWN;
     gpio_init_parameter.ospeed = HAL_GPIO_OSPEED_50MHZ;
     gpio_init_parameter.af = HAL_GPIO_AF_0;
     hal_gpio_init(GPIOA, GPIO_PIN_7, &gpio_init_parameter);
@@ -506,7 +506,7 @@ void msd_spi0_init(void)
     spi0_init_parameter.frame_size = SPI_FRAMESIZE_8BIT;
     spi0_init_parameter.endian = SPI_ENDIAN_MSB;
     spi0_init_parameter.clock_polarity_phase = SPI_CK_PL_LOW_PH_1EDGE;
-    spi0_init_parameter.prescale = SPI_PSC_2;
+    spi0_init_parameter.prescale = SPI_PSC_4;
     spi0_init_parameter.crc_calculation = SPI_CRC_DISABLE;
     spi0_init_parameter.crc_poly = 7;
     spi0_init_parameter.nss = SPI_NSS_SOFT;

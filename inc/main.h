@@ -15,7 +15,7 @@
 
 //#define USE_BME280_SPI
 #define USE_BME280_I2C
-//#define USE_W25Q_EXT_FLASH
+#define USE_W25Q_EXT_FLASH
 #define USE_RA_01_SENDER
 #define USE_MCU_DEEPSLEEP_MODE
 #define DEINIT_ALL_PERIPH_DURING_MCU_SLEEP
@@ -36,7 +36,8 @@
 #include "z_flash_W25QXXX.h"
 
 #define FLASH_CS_GPIO_Port GPIOA
-#define FLASH_CS_Pin GPIO_PIN_12
+#define FLASH_CS_Pin GPIO_PIN_4
+#define FLASH_SPI spi0_info
 
 #endif // USE_W25Q_EXT_FLASH
 
